@@ -1,0 +1,234 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <title>Statistiques inf&eacute;rentielles</title>  
+  <meta charset="utf-8">  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+  <link rel='shortcut icon' href='https://icon-library.com/images/pi-icon/pi-icon-29.jpg'/>
+   
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <style>
+  body{
+ padding: 10px 10px 10px 20px;
+ background-color: #e4e6e8;
+ }
+ </style>
+ 
+ <style>
+.ma_nav_class .active a,.ma_nav_class .active a:hover,.ma_nav_class .active a:focus {
+        background-color: #536872;
+        color: #FFFFFF;
+    }
+</style>
+ 
+
+    
+</head>  
+<body> 
+
+
+<div class="m-4">
+    <nav class="nav nav-pills flex-column">
+        <a class="nav-item nav-link active" href="Page_Ouverture.html"  target="affichage" >Accueil</a>
+        
+	<!-- Bernoulli  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi de Bernoulli</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Bernoulli_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+	 
+		<li>
+		<a class="dropdown-item" href="includes/Bernoulli_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Bernoulli_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi Binomiale  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi Binomiale</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Binomiale_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+		<li>
+		<a class="dropdown-item" href="includes/Binomiale_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Binomiale_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi de Poisson  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi de Poisson</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Poisson_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+		<li>
+		<a class="dropdown-item" href="includes/Poisson_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Poisson_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi g&eacute;om&eacute;trique  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi g&eacute;om&eacute;trique</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Geometrique_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+		<li>
+		<a class="dropdown-item" href="includes/Geometrique_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Geometrique_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi uniforme discrète  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi uniforme discr&egrave;te</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Uniforme_D_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+		<li>
+		<a class="dropdown-item" href="includes/Uniforme_D_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Uniforme_D_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi uniforme continue  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi uniforme continue</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Uniforme_C_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+		<li>
+		<a class="dropdown-item" href="includes/Uniforme_C_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Uniforme_C_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi exponentielle  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi exponentielle</a>
+	 <div class="dropdown-menu">
+	 
+	 <li>
+	 <a class="dropdown-item" href="includes/Exponentielle_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	 </li>
+		<li>
+		<a class="dropdown-item" href="includes/Exponentielle_Simulation.html" target="affichage">Simulation</a>
+		</li>
+		 <li>
+		 <a class="dropdown-item" href="includes/Exponentielle_Application.html" target="affichage">Application</a>
+		 </li>
+	 </div>
+	</div>
+		
+	<!-- Loi normale  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi normale</a>
+	 <div class="dropdown-menu">
+	 
+	<li>
+	<a class="dropdown-item" href="includes/Normale_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	</li>
+	<li>
+	<a class="dropdown-item" href="includes/Normale_Simulation.html" target="affichage">Simulation</a>
+	</li>
+	<li>
+	<a class="dropdown-item" href="includes/Normale_Application.html" target="affichage">Application</a>
+	</li>
+	
+	</div>
+	</div>
+		
+	<!-- Loi de Weibull  -->
+	<div class="nav-item dropdown">
+		<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi de Weibull</a>
+	 <div class="dropdown-menu">
+	 
+	<li>
+	<a class="dropdown-item" href="includes/Weibull_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	</li>
+
+	<li>
+	<a class="dropdown-item" href="includes/Weibull_Simulation.html" target="affichage">Simulation</a>
+	</li>
+	<li>
+	<a class="dropdown-item" href="includes/Weibull_Application.html" target="affichage">Application</a>
+	</li>
+	 
+	</div>
+	</div>
+		
+	<!-- Loi gamma  -->
+		<div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Loi gamma</a>
+         <div class="dropdown-menu">
+		 
+	<li>
+	<a class="dropdown-item" href="includes/Gamma_Proprietes.html" target="affichage">Propri&eacute;t&eacute;s</a>
+	</li>
+
+	<li>
+	<a class="dropdown-item" href="includes/Gamma_Simulation.html" target="affichage">Simulation</a>
+	</li>
+	<li>
+	<a class="dropdown-item" href="includes/Gamma_Application.html" target="affichage">Application</a>
+	</li>
+    
+	</div>
+    </div>
+
+    </nav>
+</div>
+ 
+
+
+<script>
+$(".nav.nav-pills li").on("click",function(){
+  $(".nav.nav-pills li").removeClass("active");
+  $(this).addClass("active");
+});
+</script>
+
+<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" ></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" ></script> -->
+
+
+
+</body>  
+</html>  
+
+ 

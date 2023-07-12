@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" href="https://icon-library.com/images/histogram-icon/histogram-icon-25.jpg"/>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js"],
+      "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] },
+      tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], displayMath: [ ["$$","$$"], ["\\[", "\\]"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno" },
+      TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } } },
+      messageStyle: "none"
+    });
+    </script> 
+	
+<script type="text/javascript"
+   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_CHTML">
+</script>
+	
+
+<style>
+
+table {
+  font-family: arial, sans-serif;
+  border: 1px solid white;
+  border-collapse: collapse;
+  width: 40%;
+}
+
+ th {
+  color: white;
+  border: 1px solid white;
+  background-color: blue;
+  text-align: left;
+  
+}
+
+th {
+  padding: 15px;
+  text-align:center;
+}
+
+
+.zoneD {
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid white;
+  background-color:  #5d6d7e ;
+  color: white;
+  text-align:center;
+}
+
+.zoneT {
+  width: 80%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid white;
+  background-color: blue;
+  color: white;
+  text-align:center;
+  border-radius: 5px;
+}
+
+input[type=submit] {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.FontGoogle{
+  font-family: "Audiowide", sans-serif;
+  font-size: 13pt;
+
+  text-align: center;
+  display: inline-block;
+  border-radius: 15px;
+}
+
+
+</style>
+
+
+</head>
+<body>
+
+<div style="padding: 30px; font-family: sans-serif; font-size:13pt;">
+
+<h2> Loi Uniforme discrete </h2>
+
+
+
+<table class="table table-bordered border-primary">
+
+<tbody>
+
+	<tr>
+	<td>Loi : </td>
+	<td>$$P(X = k) = \frac{1}{n}, \quad k \in \{1, 2, \ldots, n\}$$</td>
+	</tr>
+	
+	
+	<tr>
+	<td>Simulation :</td>
+	<td>si $U$  suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$  suit une loi de Weibull.</td>
+	</tr>
+</tbody>
+</table>
+
+
+</div>
+
+<div style="padding: 5px;">
+
+<form action="" method="post">
+<table>
+
+<tr>
+    <th colspan="2">Densit&eacute; de la loi Uniforme Discrete</th>
+  </tr>
+  
+<tbody>
+<tr>
+<td class="zoneD"> <label for="parama"> $n$</label>  </td>
+<td class="zoneT"> <input type="text" id="parama" name="parama" value="5"/></td>
+</tr>
+
+
+
+<tr >
+<td>
+<input  class="FontGoogle"   type="submit" name="Weilbull_densite" value="Tracer"> </td>
+<td>  </td>
+</tr>
+
+</tbody>
+</table>
+
+<!-- Fin Table  -->
+</form>
+
+</div>
+
+</body>
+</html>

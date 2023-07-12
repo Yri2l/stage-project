@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="https://icon-library.com/images/histogram-icon/histogram-icon-25.jpg"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.0/math.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js"],
+      "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX", "TeX"] },
+      tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], displayMath: [ ["$$","$$"], ["\\[", "\\]"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno" },
+      TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } } },
+      messageStyle: "none"
+    });
+  </script>
+
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_CHTML">
+  </script>
+  <style>
+    body {
+      padding: 30px;
+      font-family: sans-serif;
+      font-size: 13pt;
+    }
+
+    h2 {
+      font-family: "Sofia", sans-serif;
+      font-size: 20pt;
+      text-align: center;
+    }
+
+    table {
+      font-family: arial, sans-serif;
+      border: 1px solid white;
+      border-collapse: collapse;
+      width: 60%;
+      margin: auto;
+    }
+
+    th {
+      color: white;
+      border: 1px solid white;
+      background-color: blue;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .zoneD {
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid white;
+      background-color: #5d6d7e;
+      color: white;
+      text-align: center;
+    }
+
+    .zoneT {
+      width: 80%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid white;
+      background-color: blue;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+    }
+
+    input[type=submit] {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 15px;
+      text-decoration: none;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+
+    .FontGoogle {
+      font-family: "Audiowide", sans-serif;
+      font-size: 13pt;
+      text-align: center;
+      display: inline-block;
+      border-radius: 15px;
+    }
+
+    #chart-container {
+      max-width: 600px;
+      margin: auto;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Loi de Weibull</h2>
+    <table class="table table-bordered border-primary">
+      <tbody>
+        <tr>
+          <td>Densit&eacute; :</td>
+          <td>$$f(x, a, b) = \frac{a}{b} \left(\frac{x}{b}\right)^{a-1} e^{-(x/b)^a}, \quad x \geq 0$$</td>
+        </tr>
+        <tr>
+          <td>Fonction de r&eacute;partition :</td>
+          <td>$$F(x, a, b) = 1 - e^{-(x/b)^a}, \quad x \geq 0$$</td>
+        </tr>
+        <tr>
+          <td>Fonction de r&eacute;partition r&eacute;ciproque:</td>
+          <td>$$F^{-1}(p, a, b) = b \left(-\ln(1 - p)\right)^{\frac{1}{a}}, \quad 0 \leq p \leq 1$$</td>
+        </tr>
+        <tr>
+          <td>Simulation :</td>
+          <td>Non définie de manière explicite</td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+    <form @submit.prevent="plotDensity">
+      <table>
+        <tr>
+          <th colspan="2">Densit&eacute; de la loi de Weibull</th>
+        </tr>
+        <tbody>
+          <tr>
+            <td class="zoneD">
+              <label for="parama">\(a\)</label>
+            </td>
+            <td class="zoneT">
+              <input type="text" id="parama" v-model="parama" />
+            </td>
+          </tr>
+          <tr>
+            <td class="zoneD">
+              <label for="paramb">\(b\)</label>
+            </td>
+            <td class="zoneT">
+              <input type="text" id="paramb" v-model="paramb" />
+            </td>
+          </tr>
+          <tr>
+            <td class="zoneD">
+              <label for="min">Borne inf</label>
+            </td>
+            <td class="zoneT">
+              <input type="number" id="min" v-model="min" />
+            </td>
+          </tr>
+          <tr>
+            <td class="zoneD">
+              <label for="max">Borne sup</label>
+            </td>
+            <td class="zoneT">
+              <input type="number" id="max" v-model="max" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input class="FontGoogle" type="submit" value="Tracer" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        parama: '',
+        paramb: '',
+        min: 0,
+        max: 10,
+        chart: null
+      },
+      methods: {
+        plotDensity() {
+          const a = parseFloat(this.parama);
+          const b = parseFloat(this.paramb);
+          const xmin = parseFloat(this.min);
+          const xmax = parseFloat(this.max);
+
+          if (isNaN(a) || isNaN(b) || isNaN(xmin) || isNaN(xmax)) {
+            alert("Veuillez entrer des valeurs numériques valides.");
+            return;
+          }
+
+          if (a <= 0 || b <= 0 || xmin >= xmax) {
+            alert("Veuillez entrer des valeurs valides : a > 0, b > 0, xmin < xmax");
+            return;
+          }
+
+          const labels = [];
+          const data = [];
+
+          for (let x = xmin; x <= xmax; x += 0.1) {
+            labels.push(x.toFixed(1));
+            const density = (a / b) * Math.pow(x / b, a - 1) * Math.exp(-Math.pow(x / b, a));
+            data.push(density.toFixed(3));
+          }
+
+          if (this.chart) {
+            this.chart.data.labels = labels;
+            this.chart.data.datasets[0].data = data;
+            this.chart.update();
+          } else {
+            const ctx = document.getElementById('chart').getContext('2d');
+            this.chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: 'Densité',
+                  data: data,
+                  backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+          }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

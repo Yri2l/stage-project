@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Statistiques Descriptives</title>
+  
+  <link rel='shortcut icon' href="https://findicons.com/files/icons/2804/plex/512/python.png"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- Pour formules maths -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+  
+  <style>
+body {
+  background-color:#e6e6ff;
+  background-image: linear-gradient(rgba(172, 172, 134 , 0.95), rgba(117, 163, 163 , 0.85));
+}
+
+ul li a {
+ font-size: 1.2em;
+}
+
+h3 {
+	font-style: oblique 30deg;
+}
+
+p{
+	font-family: Tahoma, Geneva, sans-serif; 
+	font-size: 15pt; 
+	text-align: justify;
+
+}
+
+.ploi {
+ font-weight: bold;
+}
+
+.verticale {
+  border-left: 6px solid #32a1ce;
+  position: -webkit-sticky;
+  
+}
+</style>
+  
+ <style>
+textarea {
+  resize: none;
+  background-color:#c3c388;
+  font-size: 13pt;
+  
+  outline: none !important;
+  border:1px solid black;
+  box-shadow: 0 0 10px blue;
+}
+</style>
+  
+</head>
+<body>
+
+<div class="container">
+  <h1 style="text-align:center;color: blue;text-shadow: 1px 3px 0 #969696, 1px 13px 5px #aba8a8;">
+  Statistiques Descriptives</h1>
+  
+  <ul class="nav nav-pills  col-md-2">
+	<li class="active"><a data-toggle="pill" href="#moments">Moments</a></li>
+	<li><a data-toggle="pill" href="#momentsC">Moments Centr&eacute;s</a></li>
+    <li><a data-toggle="pill" href="#mode">Mode</a></li>
+    <li><a data-toggle="pill" href="#classeM">Classe Modale</a></li>
+    <li><a data-toggle="pill" href="#skew">Asymétrie</a></li>
+    <li><a data-toggle="pill" href="#kurt">Aplatissement</a></li>
+	<li><a data-toggle="pill" href="#histD">Histogramme_discr&egrave;tes</a></li>
+	<li><a data-toggle="pill" href="#histC">Histogramme_continues</a></li>
+	<li><a data-toggle="pill" href="#tabStats">Tableau des statistiques descriptives</a></li>
+	
+  </ul>
+
+<div class="tab-content col-md-10 verticale" style="left: 3em; padding: 10px 10px 10px 25px;">
+
+<div id="moments" class="tab-pane fade in active">
+      <h3>Moments</h3>
+     <h3> 
+	  $$\displaystyle  m_{r}=\frac{1}{n} \, \sum\limits_{i=1}^{n} x_{i}^{r}$$
+	 </h3>
+	 <br>
+	 
+	 <input style="background-color:blue;color:white;font-size: 16px;" type="button" value="tout sélectionner" onclick="selectText('code1')">
+	 <br>
+	 <textarea id="code1" name="code1" rows="10" cols="80">
+# Moments
+
+def Moment_r(data,r):
+    import functools
+    data=[x for x in data] # transformation de données en liste
+    fonc_r= lambda x : x**r
+    S=functools.reduce( lambda x, y: x+y,map(fonc_r,data))
+    return S/(1.0*len(data))
+
+	</textarea>
+  <br><br>
+    </div>
+	
+    <div id="momentsC" class="tab-pane fade">
+      <h3>Moments Centr&eacute;s</h3>
+     <h3> 
+	 $$\displaystyle  \mu_{r}=\frac{1}{n} \, \sum\limits_{i=1}^{n} \big(x_{i}-m_{1} \big)^{r}$$
+	 </h3>
+	 <br>
+	 
+	 <input style="background-color:blue;color:white;font-size: 16px;" type="button" value="tout sélectionner" onclick="selectText('code2')">
+	 <br>
+	 <textarea id="code2" name="code2" rows="12" cols="80">
+#Moments Centrés
+
+def Moment_cr(data,r):
+    data=[x for x in data] # transformation de données en liste
+    import functools
+    m=Moment_r(data,1)
+    fonc_r= lambda x : (x-m)**r
+    S=functools.reduce(lambda x, y: x+y,map(fonc_r,data))
+    return S/(1.0*len(data))
+
+	</textarea>
+  <br><br>
+    </div>
+  
+  
+    <div id="mode" class="tab-pane fade">
+      <h3>Mode</h3>
+     <p> 
+	  Le mode  est la valeur la plus représentée d'une variable quelconque dans 
+	  une population donnée. Une répartition peut être unimodale ou plurimodale (bimodale, trimodale…), 
+	  si deux ou plusieurs valeurs de la variable considérée émergent également, 
+	  voire sans aucun mode (distribution uniforme) si toutes les valeurs de la variable considérée émergent également.
+	 </p>
+	 <br>
+	 
+	 <input style="background-color:blue;color:white;font-size: 16px;" type="button" value="tout sélectionner" onclick="selectText('code3')">
+	 <br>
+	 <textarea id="code3" name="code3" rows="14" cols="80">
+# mode(s) pour les données discrètes
+
+def Mode_D(data):
+    data=list(data)
+    Dic={}
+    for x in data:
+        Dic[x]=data.count(x)
+        
+    Valeurs=[t for t in Dic.keys()]
+    Effectifs=[t for t in Dic.values()]
+    n_max=max(Effectifs)
+        
+    return [x for x in Valeurs if Dic[x]==n_max]
+  </textarea>
+  <br><br>
+    </div>
+    <div id="classeM" class="tab-pane fade">
+      <h3>Classe Modale</h3>
+      <p>
+	  C'est la classe dont l’effectif est le plus élevé dans une distribution d’une variable statistique  continue.
+	  </p>
+	 
+	  
+	  	 <br>
+	 <input style="background-color:blue;color:white;font-size: 16px;" type="button" value="tout sélectionner" onclick="selectText('code4')">
+	 <br>
+	 <textarea id="code4" name="code4" rows="24" cols="80">
+# classe modale pour les données continues
+
+def classse_modale(data,nb_classe):
+    data=[x for x in data]
+    m0=min(data)
+    m1=max(data)
+    
+    #Extrémités des classes
+    Extrem=[m0+(m1-m0)*i/nb_classe  for i in range(nb_classe+1)]
+    
+    #Effectifs des classes
+    NN=[]
+    for j in range(nb_classe):
+        s=0
+        for x in sorted(data):
+            if x >= Extrem[j] and x <=Extrem[j+1]:
+                s+=1
+        NN.append(s)
+    
+    j_max=[j for j in range(nb_classe) if NN[j]==max(NN)][0]
+    
+    return Extrem[j_max],Extrem[j_max+1]
+  </textarea>
+  <br><br>
+    </div>
+    <div id="skew" class="tab-pane fade">
+      <h3>Asymétrie</h3>
+	  
+	  <h3> 
+	  $$\displaystyle  \gamma_{1}=\frac{\mu_{3}}{\mu_{2}^{3/2}}$$
+	 </h3>
+	 
+     <p>
+	 Le coefficient d'asymétrie (skewness en anglais) correspond à une mesure de l’asymétrie de la distribution d’une variable aléatoire réelle. <br>
+	  l’asymétrie d’une distribution est positive si la queue de droite (à valeurs hautes) est plus longue ou grosse, 
+	  et négative si la queue de gauche (à valeurs basses) est plus longue ou grosse. 
+</p>	  
+	  
+	  <br><br><br>
+	  <div style="text-align:center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Relationship_between_mean_and_median_under_different_skewness.png" alt="skewness" width="590" height="250">
+    </div>
+	 <br>
+    </div>
+	
+    <div id="kurt" class="tab-pane fade">
+      <h3>Aplatissement</h3>
+	  
+	  <h3>  $$\displaystyle  \gamma_{2}=\frac{\mu_{4}}{\mu_{2}^{2}}-3$$
+	  </h3>
+	  
+      <p>
+	  Le coefficient d’aplatissement (kurtosis en anglais)  est une mesure directe de l’acuité et une mesure indirecte de l'aplatissement de la distribution 
+	  d’une variable aléatoire réelle. Dans le cas d’une loi normale, le coefficient d’aplatissement 
+	   est égal à 3, et en le comparant à cette valeur, on compare la forme de l'histogramme observé à celui de la loi normale. 
+	  </p>	  
+	  
+	  <br><br><br>
+	  <div style="text-align:center">
+      <img src="https://www.planet-casio.com/storage/program-images/3653-kurtosis.jpg" alt="kurtosis" width="500" height="250">
+    </div>
+
+	 <br>
+    </div>
+	
+	<div id="histD" class="tab-pane fade">
+      <h3>Histogramme des donn&eacute;es discr&egrave;tes</h3>
+     <p> 
+	  
+	 </p>
+	 <br>
+	 
+	 <input style="background-color:blue;color:white;font-size: 16px;" type="button" value="tout sélectionner" onclick="selectText('code5')">
+	 <br>
+
+<textarea id="code5" name="code5" rows="24" cols="100">
+def Histo_Discrete(data,nom=None):
+    
+    import numpy
+    import matplotlib.pyplot as plt
+    plt.rcParams['hatch.color'] = [0.9,0.9,0.9]
+    
+    # sous fonction pour compter les occurrences
+    def comptage(data):
+        data=sorted(data)
+        Dic_compt={}
+        for valeur in data:
+            Dic_compt[valeur]=data.count(valeur)
+        return Dic_compt
+
+    D=comptage(data)
+    
+    valeurs=[k for k in D.keys()]
+    effectifs=[v for v in D.values()]
+    i_mode=numpy.argmax(effectifs)
+    ### multi_mode
+    indice_mode=[i for i in range(len(effectifs)) if effectifs[i]==effectifs[i_mode]]
+
+    fig = plt.figure(figsize=(10,8))
+    ax1 = fig.add_subplot(111)
+    # cacher le cadre
+    ax1.spines['right'].set_visible(False)
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['left'].set_visible(False)
+    ax1.xaxis.set_ticks_position('bottom')
+    ax1.set_yticks([])
+    
+    ax1.set_xticks(valeurs)  ## positions des extrémités des classes
+    ax1.set_xticklabels(valeurs ,fontsize=10, rotation=25)
+    ax1.set_xlabel("Valeurs",fontsize=14)
+    ax1.set_ylabel("Effectifes",fontsize=14)
+    
+    for k in range(len(valeurs)):
+        if k not in indice_mode:
+            plt.bar(valeurs[k], height= effectifs[k],edgecolor="white")
+        else:
+            plt.bar(valeurs[k], height= effectifs[k],edgecolor="white",
+                    color = [0.15,0.15,0.85],hatch="X", lw=1., zorder = 0)
+        for i in range(len(valeurs)):
+            ax1.text(valeurs[i], effectifs[i], "%d"%(effectifs[i]),fontsize=9,
+                     horizontalalignment='center',verticalalignment='bottom',style='italic')
+    
+    if nom is None:
+        plt.show()
+    else:
+        nom_fig=str(nom)+".png"
+        plt.savefig(nom_fig, format="png")
+        plt.close()
+
+</textarea>
+  <br><br>
+    </div>
+	
+	<div id="histC" class="tab-pane fade">
+      <h3>Histogramme des donn&eacute;es continues</h3>
+     <p> 
+	  
+	 </p>
+	 <br>
+	 
+	 <input style="background-color:blue;color:white;font-size: 16px;" type="button" value="tout sélectionner" onclick="selectText('code6')">
+	 <br>
+
+
+<textarea id="code6" name="code6" rows="24" cols="110">
+def Histo_Continue(data,k,nom=None):
+    # k=nombre d'intervalles
+    
+    import numpy
+    import matplotlib.pyplot as plt
+    plt.rcParams['hatch.color'] = [0.9,0.9,0.9]
+    
+    data=numpy.array([x for x in data])
+    Ext=[min(data)+(max(data)-min(data))*i/(1.0*k) for i in range(k+1)]
+    C=[0.5*(Ext[i]+Ext[i+1]) for i in range(k)]
+
+    NN=[] # Effectifs des classes
+    for i in range(k):
+        NN.append(((Ext[i] <= data) & (data<=Ext[i+1])).sum())
+        
+    # pour la classe modale
+    indice_max=[i for i in range(k) if NN[i]==numpy.max(NN)]
+    
+    TT=[str("{:.4f}".format(t)) for t in Ext]  ## pour afficher les extrémités des classes
+    
+    fig = plt.figure(figsize=(10,7))
+    ax1 = fig.add_subplot(111)
+    # cacher le cadre
+    ax1.spines['right'].set_visible(False)
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['left'].set_visible(False)
+    ax1.xaxis.set_ticks_position('bottom')
+    ax1.set_yticks([])
+    largeur=Ext[1]-Ext[0]  #  largeur des classes
+    
+    for i in range(k):
+        
+        if i in indice_max: 
+            ax1.bar(C[i], NN[i],largeur,  color = [0.15,0.15,0.80], edgecolor="white", hatch="/", 
+                    lw=1., zorder = 0,alpha=0.9)
+        else:
+            ax1.bar(C[i], NN[i],largeur, align='center', edgecolor="white")
+        
+        ax1.text(C[i], NN[i], "%d"%(NN[i]),fontsize=9, style='italic', 
+                 horizontalalignment='center',verticalalignment='bottom')
+
+    ax1.set_xticks(Ext)  ## positions des extrémités des classes
+    ax1.set_xticklabels(TT ,fontsize=10, rotation=45)
+    ax1.set_xlim(numpy.min(data)-0.75*largeur, numpy.max(data)+0.75*largeur)
+    ax1.set_ylim(0.0, numpy.max(NN)+3.0)
+    ax1.set_xlabel("Valeurs",fontsize=13,labelpad=0)
+    ax1.set_ylabel("Effectifs",fontsize=14)
+    
+    if nom is None:
+        plt.show()
+    else:
+        nom_fig=str(nom)+".png"
+        plt.savefig(nom_fig, format="png")
+        plt.close()
+
+  </textarea>
+  <br><br>
+    </div>
+	
+	
+<div id="tabStats" class="tab-pane fade">
+      <h3>Tableau des statistiques descriptives</h3>
+	 <br>
+	 
+<table class="table table-bordered table-hover">
+	 
+  <thead style="background-color: blue;color: white; font-size: 17px;">
+    <tr>
+      <th scope="col">Statistiques</th>
+      <th scope="col">Formules</th>
+      <th scope="col">Valeurs empiriques</th>
+    </tr>
+  </thead>
+  
+  
+  <tbody>
+    <tr>
+      <td>nombres d'observations</td>
+      <td class="text-center">n</td>
+      <td class="text-center" >.......</td>
+    </tr>
+	
+	<tr>
+      <td>minimum</td>
+      <td class="text-center">$$\displaystyle min(x_{1}, \ldots , x_{n}) $$</td>
+      <td class="text-center">.......</td>
+    </tr>
+	
+	<tr>
+      <td>maximum</td>
+      <td class="text-center">$$\displaystyle max(x_{1}, \ldots , x_{n}) $$</td>
+      <td class="text-center">.......</td>
+    </tr>
+	
+    <tr>
+      <td>moyenne empirique</td>
+      <td class="text-center">$$\displaystyle m_{1}=\overline{x}_{n}=  \frac{1}{n} \sum\limits_{i=1}^{n} x_{i}$$</td>
+      <td class="text-center">.......</td>
+    </tr>
+	
+	
+     <tr>
+      <td>variance empirique</td>
+      <td class="text-center">$$\displaystyle  \mu_{2}=  \frac{1}{n} \sum\limits_{i=1}^{n} \big(x_{i}-\overline{x}_{n}\big)^{2}$$</td>
+      <td class="text-center">.......</td>
+    </tr>
+	
+	<tr>
+      <td>Asym&eacute;trie (skewness)</td>
+      <td class="text-center"> $$\displaystyle  \gamma_{1}=\frac{\mu_{3}}{\mu_{2}^{3/2}}$$</td>
+      <td class="text-center">.......</td>
+    </tr>
+	
+	<tr>
+      <td> Aplatissement (kurtosis)</td>
+      <td class="text-center"> $$\displaystyle  \gamma_{2}=\frac{\mu_{4}}{\mu_{2}^{2}}-3$$</td>
+      <td class="text-center">.......</td>
+    </tr>
+	
+	
+	
+  </tbody>
+</table>
+	 
+</div>	 
+	
+
+</div>
+</div>
+
+<br> <br />
+
+
+<footer id="background" style="height:50px; border-radius: 10px;">
+     <marquee direction="scroll"> <p style="padding:10px; color:white;">© 2023  Dariush GHORBANZADEH</p>
+	 </marquee>
+</footer>
+
+<script>
+    function selectText(id){
+     var id = document.getElementById(id);
+     id.focus();
+     id.select();
+    }
+	
+</script>
+
+<!-- Générer des couleurs aléatoires pour le pied de page. -->
+<script>
+const background = document.getElementById("background");
+
+const getRandomNumber = (limit) => {
+  return Math.floor(Math.random() * limit);
+};
+ const getRandomColor = () => {
+ 
+ const h = Math.floor(10+Math.random() * 100);
+    const s = Math.floor(10+Math.random() * 100);
+    const l = Math.floor(10+Math.random() * 240);
+    const bgColor = "rgb(" + h + "," + s + "," + l + ")";
+	
+  return bgColor;
+};
+
+const setBackgroundColor = () => {
+  const randomColor = getRandomColor();
+  background.style.backgroundColor = randomColor;
+  background.style.color = randomColor;
+};
+
+setBackgroundColor();
+
+setInterval(() => {
+  setBackgroundColor();
+}, 2500);
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>

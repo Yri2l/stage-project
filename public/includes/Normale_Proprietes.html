@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr" xml:lang="fr" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="https://icon-library.com/images/histogram-icon/histogram-icon-25.jpg"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.5.0/math.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      extensions: ["tex2jax.js"],
+      "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX", "TeX"] },
+      tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], displayMath: [ ["$$","$$"], ["\\[", "\\]"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno" },
+      TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } } },
+      messageStyle: "none"
+    });
+  </script>
+
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_CHTML">
+  </script>
+  <style>
+    body {
+      padding: 30px;
+      font-family: sans-serif;
+      font-size: 13pt;
+    }
+
+    h2 {
+      font-family: "Sofia", sans-serif;
+      font-size: 20pt;
+      text-align: center;
+    }
+
+    table {
+      font-family: arial, sans-serif;
+      border: 1px solid white;
+      border-collapse: collapse;
+      width: 60%;
+      margin: auto;
+    }
+
+    th {
+      color: white;
+      border: 1px solid white;
+      background-color: blue;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .zoneD {
+      width: 70%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid white;
+      background-color: #5d6d7e;
+      color: white;
+      text-align: center;
+    }
+
+    .zoneT {
+      width: 80%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid white;
+      background-color: blue;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+    }
+
+    input[type=submit] {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 15px;
+      text-decoration: none;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+
+    .FontGoogle {
+      font-family: "Audiowide", sans-serif;
+      font-size: 13pt;
+      text-align: center;
+      display: inline-block;
+      border-radius: 15px;
+    }
+
+    #chart-container {
+      max-width: 600px;
+      margin: auto;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h2>Loi Normale</h2>
+    <table class="table table-bordered border-primary">
+      <tbody>
+        <tr>
+          <td>Densité :</td>
+          <td>$$f(x, \mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}, \quad -\infty < x < \infty$$</td>
+        </tr>
+        <tr>
+          <td>Fonction de r&eacute;partition :</td>
+          <td>$$F(x, \mu, \sigma^2) = \int_{-\infty}^x \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(t-\mu)^2}{2\sigma^2}} dt$$</td>
+        </tr>
+        <tr>
+          <td>Fonction de r&eacute;partition r&eacute;ciproque:</td>
+          <td>Non définie de manière explicite</td>
+        </tr>
+        <tr>
+          <td>Simulation :</td>
+          <td>Non définie de manière explicite</td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+    <form @submit.prevent="plotDensity">
+      <table>
+        <tr>
+          <th colspan="2">Densité de la loi Normale</th>
+        </tr>
+        <tbody>
+          <tr>
+            <td class="zoneD">
+              <label for="parammu">\(\mu\)</label>
+            </td>
+            <td class="zoneT">
+              <input type="text" id="parammu" v-model="parammu" />
+            </td>
+          </tr>
+          <tr>
+            <td class="zoneD">
+              <label for="paramsigma">\(\sigma^2\)</label>
+            </td>
+            <td class="zoneT">
+              <input type="text" id="paramsigma" v-model="paramsigma" />
+            </td>
+          </tr>
+          <tr>
+            <td class="zoneD">
+              <label for="min">Borne inf</label>
+            </td>
+            <td class="zoneT">
+              <input type="number" id="min" v-model="min" />
+            </td>
+          </tr>
+          <tr>
+            <td class="zoneD">
+              <label for="max">Borne sup</label>
+            </td>
+            <td class="zoneT">
+              <input type="number" id="max" v-model="max" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input class="FontGoogle" type="submit" value="Tracer" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        parammu: '0',
+        paramsigma: '1',
+        min: '-10',
+        max: '10',
+        chart: null,
+      },
+      methods: {
+        plotDensity() {
+          if (this.chart) {
+            this.chart.destroy();
+          }
+
+          const mu = parseFloat(this.parammu);
+          const sigmaSquared = parseFloat(this.paramsigma);
+          const min = parseFloat(this.min);
+          const max = parseFloat(this.max);
+
+          const data = [];
+          const labels = [];
+
+          for (let x = min; x <= max; x += 0.1) {
+            const exponent = -((x - mu) ** 2) / (2 * sigmaSquared);
+            const density = (1 / (Math.sqrt(2 * Math.PI * sigmaSquared))) * Math.exp(exponent);
+            data.push(density.toFixed(2));
+            labels.push(x.toFixed(1));
+          }
+
+          const ctx = document.getElementById('chart').getContext('2d');
+          this.chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Densité',
+                data: data,
+                borderColor: 'blue',
+                backgroundColor: 'rgba(0, 0, 255, 0.2)',
+              }],
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'x',
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Densité',
+                  },
+                  beginAtZero: true,
+                },
+              },
+            },
+          });
+        },
+      },
+      mounted() {
+        this.plotDensity();
+      },
+    });
+  </script>
+</body>
+
+</html>
