@@ -23,27 +23,26 @@ function Moments_centre_r(data,r) {
 
 //statistiques descriptives des données
 function Stats_descriptives(data) {
-	let Stats = Object.create(null);
-	Stats["nombre d'observation"]= data.length;
-	Stats["minimum"]= Math.min(...data);
-	Stats["maximum"]=Math.max(...data);
-	Stats["moyenne"]=Moments_r(data,1).toFixed(4);
-	Stats["variance"]=Moments_centre_r(data,2).toFixed(4);
-	
+	let Stats = {};
+	Stats["nombre d'observation"] = data.length;
+	Stats["minimum"] = Math.min(...data);
+	Stats["maximum"] = Math.max(...data);
+	Stats["moyenne"] = Moments_r(data, 1).toFixed(4);
+	Stats["variance"] = Moments_centre_r(data, 2).toFixed(4);
+  
 	// skewness
-	let m3=Moments_centre_r(data,3);
-	let m23=Math.pow(Moments_centre_r(data,2), 1.5)
-	
-	Stats["skewness"]=(m3/m23).toFixed(4);
-	
+	let m3 = Moments_centre_r(data, 3);
+	let m23 = Math.pow(Moments_centre_r(data, 2), 1.5);
+	Stats["skewness"] = (m3 / m23).toFixed(4);
+  
 	// kurtosis
-	let m4=Moments_centre_r(data,4);
-	let m22=Math.pow(Moments_centre_r(data,2), 2);
-	Stats["kurtosis"]=(-3+m4/m22).toFixed(4);
- 
-  return Stats;
-}
-
+	let m4 = Moments_centre_r(data, 4);
+	let m22 = Math.pow(Moments_centre_r(data, 2), 2);
+	Stats["kurtosis"] = (-3 + m4 / m22).toFixed(4);
+  
+	return Stats;
+  }
+  
 //tableau des statistiques descriptives des données (html)
 function Stats_descriptives_html(data) {
 	let Dict=Stats_descriptives(X);  // dictionnaire des stats
