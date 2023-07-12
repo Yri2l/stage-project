@@ -282,7 +282,24 @@
           this.data_echantillon = echantillonsBernoulli(this.param1, this.nb_echantillon);
         },
         Stats_descriptives() {
-          return Stats_descriptives(this.data_echantillon);
+          let Stats = {};
+	Stats["nombre d'observation"] = this.data_echantillon.length;
+	Stats["minimum"] = Math.min(...this.data_echantillon);
+	Stats["maximum"] = Math.max(...this.data_echantillon);
+	Stats["moyenne"] = Moments_r(this.data_echantillon, 1).toFixed(4);
+	Stats["variance"] = Moments_centre_r(this.data_echantillon, 2).toFixed(4);
+  
+	// skewness
+	let m3 = Moments_centre_r(this.data_echantillon, 3);
+	let m23 = Math.pow(Moments_centre_r(this.data_echantillon, 2), 1.5);
+	Stats["skewness"] = (m3 / m23).toFixed(4);
+  
+	// kurtosis
+	let m4 = Moments_centre_r(this.data_echantillon, 4);
+	let m22 = Math.pow(Moments_centre_r(this.data_echantillon, 2), 2);
+	Stats["kurtosis"] = (-3 + m4 / m22).toFixed(4);
+  
+	return Stats;
         },
         renderChart() {
           const ctx = document.getElementById('myChart').getContext('2d');
