@@ -200,29 +200,32 @@
     
      <!-- Estimation 	 -->
     
-        <div id="analyse" class="container tab-pane fade"><br>
-         <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-          <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
-          
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Estimateur de Vraisemblance</h5>
-              <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Estimateur \(\hat{\mu}\)</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" v-model="estimation_mu" readonly>
-                </div>
-              </div>
-              <div class="form-group row">
-                <label class="col-sm-2 col-form-label">Estimateur \(\hat{\sigma}^2\)</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" v-model="estimation_sigma" readonly>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-        </div>
+     <div id="analyse" class="container tab-pane fade"><br>
+      <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+       <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
+       <div class="row">
+         <div class="col-md-6">
+           <table class="table table-bordered table-hover">
+             <thead style="background-color: blue;color: white; font-size: 17px;">
+               <tr>
+                 <th scope="col">Estimateurs</th>
+                 <th scope="col">Valeurs</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>Estimateur de vraisemblance maximum \(\mu\)</td>
+                 <td>{{estim_Mu}}</td>
+               </tr>
+               <tr>
+                <td>Estimateur de vraisemblance maximum \(\sigma^{2}\)</td>
+                <td>{{estim_Sigma}}</td>
+              </tr>
+             </tbody>
+           </table>
+         </div>
+       </div>
+     </div>
       
       </div>
       
@@ -275,7 +278,13 @@
       computed: {
         stat_desc() {
           return this.Stats_descriptives();
-        }
+        },
+        estim_Mu() {
+          return this.estimationMu();
+        },
+        estim_Sigma() {
+          return this.estimationSigma();
+        },
       },
       methods: {
         couleurrgba() {
@@ -304,7 +313,7 @@
           return histogram_Continue(this.data_echantillon, this.nb_barre);
         },
         echantillon() {
-          this.data_echantillon = echantillonNormale(this.param1, Math.log(this.param2), this.nb_echantillon);
+          this.data_echantillon = echantillonNormale(this.param1, Math.sqrt(this.param2), this.nb_echantillon);
           this.estimation_mu = this.estimationMu();
           this.estimation_sigma = this.estimationSigma();
         },

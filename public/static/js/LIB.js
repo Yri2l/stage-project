@@ -403,9 +403,7 @@ function echantillonNormale(mu, sigma, taille) {
 	
     const echantillon = mu + sigma * x;
     echantillons.push(x);
-	console.log(echantillon);
   }
-  console.log(echantillons);
   return echantillons;
 }
 
@@ -437,5 +435,184 @@ function echantillonsGamma(alpha, beta, taille) {
 
   return echantillons;
 }
+// Fonction pour calculer la moyenne d'un tableau de données
+function mean(data) {
+	var sum = data.reduce(function(a, b) {
+	  return a + b;
+	}, 0);
+	return sum / data.length;
+  }
+  
+  // Fonction pour calculer la variance d'un tableau de données
+  function variance(data) {
+	var mu = mean(data);
+	var sum = data.reduce(function(a, b) {
+	  return a + Math.pow(b - mu, 2);
+	}, 0);
+	return sum / data.length;
+  }
+  
+  // Fonction de log-vraisemblance pour la loi gamma
+  function gammaLogLikelihood(params, data) {
+	var alpha = params[0];
+	var beta = params[1];
+	var logLikelihood = 0;
+  
+	for (var i = 0; i < data.length; i++) {
+	  logLikelihood += (alpha - 1) * Math.log(data[i]) - data[i] / beta - alpha * Math.log(beta) - Math.log(Math.gamma(alpha));
+	}
+  
+	return -logLikelihood;
+  }
+  
+  // Algorithme pour trouver le premier estimateur de vraisemblance maximale
 
+  
+  function gamma(x) {
+	if (x === 0) {
+	  return Infinity;
+	} else if (x < 0) {
+	  return gamma(x + 1) / x;
+	} else {
+	  var coef = [
+		76.18009172947146, -86.50532032941677, 24.01409824083091,
+		-1.231739572450155, 0.001208650973866179, -0.000005395239384953
+	  ];
+	  var sum = 1.000000000190015;
+	  var base = x - 1;
+	  for (var i = 0; i < 6; i++) {
+		base++;
+		sum += coef[i] / base;
+	  }
+	  var tmp = base + 5.5;
+	  return Math.sqrt(2 * Math.PI) * Math.pow(tmp, (base + 0.5)) * Math.exp(-tmp) * sum;
+	}
+  }
+  
+  function psi(x) {
+	if (x === 0) {
+	  return -Infinity;
+	} else if (x < 0) {
+	  return psi(x + 1) - (1 / x);
+	} else if (x < 6) {
+	  return psi(x + 1) - (1 / x);
+	} else {
+	  var coef = [
+		0.008333333333333333,
+		-0.16666666666666666,
+		0.008333333333333333,
+		-0.003968253968253968,
+		0.004166666666666666,
+		-0.007575757575757576,
+		0.021092796092796094,
+		-0.08333333333333333,
+		0.4432598039215686
+	  ];
+	  var sum = 0;
+	  var base = 1 / (x * x);
+	  for (var i = 0; i < 9; i++) {
+		sum += coef[i] * Math.pow(base, i);
+	  }
+	  return Math.log(x) - (1 / (2 * x)) - sum;
+	}
+  }
+  
+  function gradientDescent(objective, gradient, initialParams, learningRate = 0.1, tolerance = 1e-6, maxIterations = 1000) {
+	var params = initialParams.slice();
+	var prevObjectiveValue = objective(params);
+	var iterations = 0;
+	while (true) {
+	  var grad = gradient(params);
+	  for (var i = 0; i < params.length; i++) {
+		params[i] -= learningRate * grad[i];
+	  }
+	  var objectiveValue = objective(params);
+	  if (Math.abs(objectiveValue - prevObjectiveValue) < tolerance) {
+		break;
+	  }
+	  prevObjectiveValue = objectiveValue;
+	  iterations++;
+	  if (iterations >= maxIterations) {
+		break;
+	  }
+	}
+	return params;
+  }
+  // Algorithme pour trouver l'estimateur de vraisemblance maximale des paramètres alpha et beta de la loi gamma
+function estimateurs_gamma(data) {
+	// Définition des fonctions de calcul de la log-vraisemblance et de son gradient
+	function logVraisemblance(params) {
+	  var alpha = params[0];
+	  var beta = params[1];
+	  var logLikelihood = 0;
+	  for (var i = 0; i < data.length; i++) {
+		logLikelihood += (alpha - 1) * Math.log(data[i]) - beta * data[i] - alpha * Math.log(beta) - Math.log(gamma(alpha));
+	  }
+	  return -logLikelihood;
+	}
+  
+	function gradient(params) {
+	  var alpha = params[0];
+	  var beta = params[1];
+	  var gradAlpha = 0;
+	  var gradBeta = 0;
+	  for (var i = 0; i < data.length; i++) {
+		gradAlpha += Math.log(data[i]) - Math.log(beta) - psi(alpha);
+		gradBeta += (alpha / beta) - data[i];
+	  }
+	  return [-gradAlpha, -gradBeta];
+	}
+  
+	// Initialisation des paramètres
+	var alphaInit = 1;
+	var betaInit = 1;
+	var paramsInit = [alphaInit, betaInit];
+  
+	// Minimisation de la log-vraisemblance en utilisant l'algorithme du gradient
+	var result = gradientDescent(logVraisemblance, gradient, paramsInit);
+  
+	// Estimation des paramètres alpha et beta
+	var alphaEstimateur = result[0];
+	var betaEstimateur = result[1];
+  
+	return [alphaEstimateur, betaEstimateur];
+  }
+  
+   // Algorithme pour trouver le premier estimateur de vraisemblance maximale (paramètre alpha)
+function estimateur_gamma_1(data) {
+
+	return estimateurs_gamma(data);
+  }
+  
+  // Algorithme pour trouver le deuxième estimateur de vraisemblance maximale (paramètre beta)
+  function estimateur_gamma_2(data) {
+	return estimateurs_gamma(data);
+  }
+  
+
+  function estimateur_weibull_1(data) {
+	// Estimation du paramètre d'échelle 'a'
+	var sum = 0;
+	var n = data.length;
+	for (var i = 0; i < n; i++) {
+	  sum += Math.log(data[i]);
+	}
+	var estimator_a = Math.exp(sum / n);
+	
+	return estimator_a;
+  }
+  
+  function estimateur_weibull_2(data) {
+	// Estimation du paramètre de forme 'b' étant donné 'a'
+	a = estimateur_weibull_1(data);
+	var sum = 0;
+	var n = data.length;
+	for (var i = 0; i < n; i++) {
+	  sum += Math.log(data[i] / a);
+	}
+	var estimator_b = 1 / (sum / n);
+	
+	return estimator_b;
+  }
+  
 ///////////////////////////////////////////////////

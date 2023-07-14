@@ -192,12 +192,34 @@
       </div>
     </div>
 	
-	<div id="Estimation" class="container tab-pane fade"><br>
-      <h3>Estimation de param&egrave;tre</h3>
-      <p>inclure et interpr&eacute;ter  </p>
-
-	</div>
   
+  <!-- Estimation 	 -->
+  <div id="Estimation" class="container tab-pane fade"><br>
+    <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+     <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
+     <div class="row">
+       <div class="col-md-6">
+         <table class="table table-bordered table-hover">
+           <thead style="background-color: blue;color: white; font-size: 17px;">
+             <tr>
+               <th scope="col">Estimateurs</th>
+               <th scope="col">Valeurs</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td>Estimateur de vraisemblance maximum a</td>
+               <td>{{evm_weibull_1}}</td>
+             </tr>
+             <tr>
+              <td>Estimateur de vraisemblance maximum b</td>
+              <td>{{evm_weibull_2}}</td>
+            </tr>
+           </tbody>
+         </table>
+       </div>
+     </div>
+  </div>
   </div>
   
   </div>
@@ -230,12 +252,24 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
-              }
+              },
+              evm_weibull_1(){
+          return this.estimateur_weibull_1();
+        },
+        evm_weibull_2(){
+          return this.estimateur_weibull_2();
+        }
       },
       methods: {
         handleFileChange(event) {
           const file = event.target.files[0];
           this.readFile(file);
+        },
+        estimateur_weibull_1(){
+          return estimateur_weibull_1(this.data_echantillon);
+        },
+        estimateur_weibull_2(){
+          return estimateur_weibull_2(this.data_echantillon);
         },
         readFile(file) {
           const reader = new FileReader();

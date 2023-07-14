@@ -199,10 +199,32 @@
     
      <!-- Estimation 	 -->
     
-        <div id="analyse" class="container tab-pane fade"><br>
-         <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-          <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
-        </div>
+     <div id="analyse" class="container tab-pane fade"><br>
+      <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+       <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
+       <div class="row">
+         <div class="col-md-6">
+           <table class="table table-bordered table-hover">
+             <thead style="background-color: blue;color: white; font-size: 17px;">
+               <tr>
+                 <th scope="col">Estimateurs</th>
+                 <th scope="col">Valeurs</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>Estimateur de vraisemblance maximum a</td>
+                 <td>{{evm_gamma_1}}</td>
+               </tr>
+               <tr>
+                <td>Estimateur de vraisemblance maximum b</td>
+                <td>{{evm_gamma_2}}</td>
+              </tr>
+             </tbody>
+           </table>
+         </div>
+       </div>
+     </div>
       
       </div>
       
@@ -253,6 +275,12 @@
       computed: {
         stat_desc() {
           return this.Stats_descriptives();
+        },
+        evm_gamma_1(){
+          return this.estimateur_gamma_1();
+        },
+        evm_gamma_2(){
+          return this.estimateur_gamma_2();
         }
       },
       methods: {
@@ -282,10 +310,16 @@
           return histogram_Continue(this.data_echantillon, this.nb_barre);
         },
         echantillon() {
-          this.data_echantillon = echantillonGamma(this.param1, this.param2, this.nb_echantillon);
+          this.data_echantillon = echantillonsGamma(this.param1, this.param2, this.nb_echantillon);
         },
         Stats_descriptives() {
           return Stats_descriptives(this.data_echantillon);
+        },
+        estimateur_gamma_1(){
+          return estimateur_gamma_1(this.data_echantillon);
+        },
+        estimateur_gamma_2(){
+          return estimateur_gamma_2(this.data_echantillon);
         },
         renderChart() {
           const ctx = document.getElementById('myChart').getContext('2d');
