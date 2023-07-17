@@ -109,10 +109,6 @@
           <td>Loi : </td>
           <td>$$P(X = k) = \frac{{n!}}{{k!(n-k)!}} p^k (1-p)^{n-k}, \quad k \in \{0, 1, 2, \ldots, n\}$$</td>
         </tr>
-        <tr>
-          <td>Simulation :</td>
-          <td>si \(U\) suit une loi uniforme sur \([0,1]\), alors \(F^{-1}(U,a,b)\) suit une loi de Weibull.</td>
-        </tr>
       </tbody>
     </table>
   </div>
@@ -160,11 +156,14 @@
       event.preventDefault();
       var p = parseFloat(document.getElementById("parama").value);
       var n = parseFloat(document.getElementById("paramb").value);
-      var estimateur = p; // L'estimateur maximum de vraisemblance pour la loi binomiale est simplement le paramètre p lui-même
-      
+      var esperance = n * p;
+      var variance = n * p * (1 - p);
+
       var resultatHtml = '<table class="resultatTable">';
-      resultatHtml += '<tr><th>Estimateur maximum de vraisemblance :</th></tr>';
-      resultatHtml += '<tr><td>' + estimateur + '</td></tr>';
+      resultatHtml += '<tr><th>Esperance :</th></tr>';
+      resultatHtml += '<tr><td>' + esperance.toFixed(2) + '</td></tr>';
+      resultatHtml += '<tr><th>Variance :</th></tr>';
+      resultatHtml += '<tr><td>' + variance.toFixed(2) + '</td></tr>';
       resultatHtml += '</table>';
 
       document.getElementById("resultatEstimateur").innerHTML = resultatHtml;

@@ -245,6 +245,7 @@
         },
         updateChart() {
           // Mettez à jour les données du graphique
+
           this.values = this.getUniqueCount()[1];
           this.effective = this.getUniqueCount()[2];
 
@@ -255,9 +256,21 @@
           // Mettez à jour le graphique
           this.chart.update();
         },
-        rgba_vecteur(){
-          return rgba_vecteur(this.nb_echantillon);
-        },
+        couleurrgba() {
+        let r = Math.floor(20 + Math.random() * 230);
+        let g = Math.floor(20 + Math.random() * 230);
+        let b = Math.floor(20 + Math.random() * 230);
+        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        return color;
+      },
+      rgba_vecteur(n) {
+        fond_couleur = [];
+        for (let i = 0; i < n; i++) {
+          fond_couleur.push(this.couleurrgba());
+        }
+        return fond_couleur;
+      },
         getUniqueCount()
         {
           return getUniqueCount(this.data_echantillon);

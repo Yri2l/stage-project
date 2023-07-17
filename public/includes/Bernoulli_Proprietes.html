@@ -134,24 +134,26 @@
             </td>
           </tr>
           <tr>
-            <td colspan="2">
-              <div id="resultatEstimateur"></div>
-            </td>
           </tr>
         </tbody>
       </table>
     </form>
   </div>
 
+  <div id="resultatEstimateur"></div>
+
   <script type="text/javascript">
     document.getElementById("formEstimateur").addEventListener("submit", function(event) {
       event.preventDefault();
       var theta = parseFloat(document.getElementById("parama").value);
-      var estimateur = theta; // L'estimateur maximum de vraisemblance pour la loi de Bernoulli est simplement le paramètre theta lui-même
-      
+      var esperance = theta;
+      var variance = theta * (1 - theta);
+
       var resultatHtml = '<table class="resultatTable">';
-      resultatHtml += '<tr><th>Estimateur maximum de vraisemblance :</th></tr>';
-      resultatHtml += '<tr><td>' + estimateur + '</td></tr>';
+      resultatHtml += '<tr><th>Esperance :</th></tr>';
+      resultatHtml += '<tr><td>' + esperance + '</td></tr>';
+      resultatHtml += '<tr><th>Variance :</th></tr>';
+      resultatHtml += '<tr><td>' + variance + '</td></tr>';
       resultatHtml += '</table>';
 
       document.getElementById("resultatEstimateur").innerHTML = resultatHtml;

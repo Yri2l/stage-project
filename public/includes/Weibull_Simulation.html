@@ -206,10 +206,32 @@
     
      <!-- Estimation 	 -->
     
-        <div id="analyse" class="container tab-pane fade"><br>
-         <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-          <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
-        </div>
+     <div id="analyse" class="container tab-pane fade"><br>
+      <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+       <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
+       <div class="row">
+         <div class="col-md-6">
+           <table class="table table-bordered table-hover">
+             <thead style="background-color: blue;color: white; font-size: 17px;">
+               <tr>
+                 <th scope="col">Estimateurs</th>
+                 <th scope="col">Valeurs</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>Estimateur de vraisemblance maximum a</td>
+                 <td>{{estim_a}}</td>
+               </tr>
+               <tr>
+                <td>Estimateur de vraisemblance maximum b</td>
+                <td>{{estim_b}}</td>
+              </tr>
+             </tbody>
+           </table>
+         </div>
+       </div>
+     </div>
       
       </div>
       
@@ -261,7 +283,13 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
-              }
+              },
+        estim_a() {
+          return this.estimationA();
+        },
+        estim_b() {
+          return this.estimationB();
+        },
       },
       methods: {
         couleurrgba() {
@@ -291,6 +319,16 @@
         },
         echantillon() {
           this.data_echantillon = echantillonWeibull(this.param1, this.param2, this.nb_echantillon);
+        },
+        estimationA() {
+          //const sum = this.data_echantillon.reduce((acc, val) => acc + val, 0);
+          //return sum / this.data_echantillon.length;
+          return estimateurWeibull(this.data_echantillon)[0];
+        },
+        estimationB() {
+          //const sumSquaredDiff = this.data_echantillon.reduce((acc, val) => acc + Math.pow(val - this.estimation_mu, 2), 0);
+          //return sumSquaredDiff / this.data_echantillon.length;
+          return estimateurWeibull(this.data_echantillon)[1];
         },
         Stats_descriptives() {
           return Stats_descriptives(this.data_echantillon);

@@ -385,7 +385,27 @@ function echantillonsExponentielle(lambda, taille) {
 	return echantillons;
   }
 
+
+/*function echantillonNormale(mu, sigmaCarre, nbEchantillons) {
+	var echantillon = [];
+	for (var i = 0; i < nbEchantillons; i++) {
+	  var p, p1, p2;
+	  do {
+		p1 = Math.random() * 2 - 1;
+		p2 = Math.random() * 2 - 1;
+		p = p1 * p1 + p2 * p2;
+	  } while (p >= 1);
+	  var valeur = mu + Math.sqrt(-2 * Math.log(p) / p) * Math.sqrt(sigmaCarre) * p1;
+	  echantillon.push(valeur);
+	}
+	console.log(echantillon);
+	return echantillon;
+}*/
+  
 function echantillonNormale(mu, sigma, taille) {
+	mu = parseFloat(mu);
+  sigma = parseFloat(sigma);
+  taille = parseInt(taille);
   const echantillons = [];
 
   for (let i = 0; i < taille; i++) {
@@ -401,11 +421,45 @@ function echantillonNormale(mu, sigma, taille) {
 
     const x = u * Math.sqrt(-2 * Math.log(s) / s);
 	
-    const echantillon = mu + sigma * x;
-    echantillons.push(x);
+    const y = mu + sigma * x;
+    echantillons.push(y);
   }
   return echantillons;
 }
+
+function estimateurNormale(echantillon) {
+	const n = echantillon.length;
+	let mu = 0;
+	let sigma = 1;
+	const learningRate = 0.01;
+	const numIterations = 1000;
+  
+	for (let i = 0; i < numIterations; i++) {
+	  let sumGradMu = 0;
+	  let sumGradSigma = 0;
+  
+	  for (let j = 0; j < n; j++) {
+		const x = echantillon[j];
+		const gradMu = (x - mu) / (sigma * sigma);
+		const gradSigma = ((x - mu) * (x - mu) - sigma * sigma) / (sigma * sigma * sigma);
+		sumGradMu += gradMu;
+		sumGradSigma += gradSigma;
+	  }
+  
+	  const updateMu = (learningRate / n) * sumGradMu;
+	  const updateSigma = (learningRate / n) * sumGradSigma;
+  
+	  mu += updateMu;
+	  sigma += updateSigma;
+	}
+  
+	return [mu, sigma];
+  }
+  
+  
+  
+  
+
 
 function echantillonWeibull(lambda, k, taille) {
 	const echantillons = [];
@@ -418,6 +472,69 @@ function echantillonWeibull(lambda, k, taille) {
   
 	return echantillons;
   }
+
+  /*Estimateur basé sur la methode des moments défaillant
+  function estimateurWeibull(echantillon) {
+	const n = echantillon.length;
+	
+	// Calcul des moments empiriques
+	let sommeX = 0;
+	let sommeXCarre = 0;
+	
+	for (let i = 0; i < n; i++) {
+	  sommeX += echantillon[i];
+	  sommeXCarre += echantillon[i] ** 2;
+	}
+	
+	const moment1 = sommeX / n;
+	const moment2 = sommeXCarre / n;
+	
+	// Estimation des paramètres de la loi de Weibull
+	const estimationK = Math.sqrt(moment2) / moment1;
+	const estimationLambda = moment1 / gamma(1 + 1 / estimationK);
+	
+	return [estimationK, estimationLambda];
+  }
+  
+  // Fonction pour calculer la fonction gamma
+  function gamma(x) {
+	// Implémentation simplifiée de la fonction gamma
+	// Vous pouvez utiliser une bibliothèque mathématique plus complète pour une précision accrue
+	if (x === 1) {
+	  return 1;
+	} else {
+	  return (x - 1) * gamma(x - 1);
+	}
+  }*/
+
+  function estimateurWeibull(echantillon) {
+	const n = echantillon.length;
+	let a = 1; // Initialisation du paramètre a
+	let b = 1; // Initialisation du paramètre b
+  
+	const learningRate = 0.01; // Taux d'apprentissage
+	const iterations = 1000; // Nombre d'itérations
+  
+	for (let iter = 0; iter < iterations; iter++) {
+	  let gradientA = 0;
+	  let gradientB = 0;
+  
+	  for (let i = 0; i < n; i++) {
+		const x = echantillon[i];
+		const powerTerm = Math.pow(x, a - 1);
+		const expTerm = Math.exp(-Math.pow(x, a));
+  
+		gradientA += (powerTerm * expTerm * (1 - Math.pow(x, a))) / n;
+		gradientB += (powerTerm * expTerm * Math.pow(x, a) * (Math.log(x) - a / x)) / n;
+	  }
+  
+	  a += learningRate * gradientA; // Mise à jour du paramètre a
+	  b += learningRate * gradientB; // Mise à jour du paramètre b
+	}
+  
+	return [a, b];
+  }
+  
   
 
 function echantillonsGamma(alpha, beta, taille) {

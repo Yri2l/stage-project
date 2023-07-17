@@ -193,33 +193,36 @@
     </div>
 	
   
-  <!-- Estimation 	 -->
-  <div id="Estimation" class="container tab-pane fade"><br>
-    <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-     <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
-     <div class="row">
-       <div class="col-md-6">
-         <table class="table table-bordered table-hover">
-           <thead style="background-color: blue;color: white; font-size: 17px;">
-             <tr>
-               <th scope="col">Estimateurs</th>
-               <th scope="col">Valeurs</th>
-             </tr>
-           </thead>
-           <tbody>
-             <tr>
-               <td>Estimateur de vraisemblance maximum a</td>
-               <td>{{evm_weibull_1}}</td>
-             </tr>
-             <tr>
-              <td>Estimateur de vraisemblance maximum b</td>
-              <td>{{evm_weibull_2}}</td>
-            </tr>
-           </tbody>
-         </table>
+    <div id="Estimation" class="container tab-pane fade"><br>
+      <h3>Estimation de param&egrave;tre</h3>
+      <p>inclure et interpr&eacute;ter  </p>
+      <!-- Estimation 	 -->
+    
+      <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+       <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
+       <div class="row">
+         <div class="col-md-6">
+           <table class="table table-bordered table-hover">
+             <thead style="background-color: blue;color: white; font-size: 17px;">
+               <tr>
+                 <th scope="col">Estimateurs</th>
+                 <th scope="col">Valeurs</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr>
+                 <td>Estimateur de vraisemblance maximum a</td>
+                 <td>{{estim_a}}</td>
+               </tr>
+               <tr>
+                <td>Estimateur de vraisemblance maximum b</td>
+                <td>{{estim_b}}</td>
+              </tr>
+             </tbody>
+           </table>
+         </div>
        </div>
-     </div>
-  </div>
+	</div>
   </div>
   
   </div>
@@ -253,23 +256,27 @@
               {
                 return this.Stats_descriptives();
               },
-              evm_weibull_1(){
-          return this.estimateur_weibull_1();
+        estim_a() {
+          return this.estimationA();
         },
-        evm_weibull_2(){
-          return this.estimateur_weibull_2();
-        }
+        estim_b() {
+          return this.estimationB();
+        },
       },
       methods: {
         handleFileChange(event) {
           const file = event.target.files[0];
           this.readFile(file);
         },
-        estimateur_weibull_1(){
-          return estimateur_weibull_1(this.data_echantillon);
+        estimationA() {
+          //const sum = this.data_echantillon.reduce((acc, val) => acc + val, 0);
+          //return sum / this.data_echantillon.length;
+          return estimateurWeibull(this.data_echantillon)[0];
         },
-        estimateur_weibull_2(){
-          return estimateur_weibull_2(this.data_echantillon);
+        estimationB() {
+          //const sumSquaredDiff = this.data_echantillon.reduce((acc, val) => acc + Math.pow(val - this.estimation_mu, 2), 0);
+          //return sumSquaredDiff / this.data_echantillon.length;
+          return estimateurWeibull(this.data_echantillon)[1];
         },
         readFile(file) {
           const reader = new FileReader();
@@ -285,7 +292,8 @@
         },
         updateChart() {
           // Mettez à jour les données du graphique
-          this.values = this.histogram_Continue()[0];
+          this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
+
           this.effective = this.histogram_Continue()[1];
 
           // Mettez à jour les données du graphique existant
@@ -295,9 +303,21 @@
           // Mettez à jour le graphique
           this.chart.update();
         },
-        rgba_vecteur(){
-          return rgba_vecteur(this.nb_echantillon);
-        },
+        couleurrgba() {
+        let r = Math.floor(20 + Math.random() * 230);
+        let g = Math.floor(20 + Math.random() * 230);
+        let b = Math.floor(20 + Math.random() * 230);
+        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        return color;
+      },
+      rgba_vecteur(n) {
+        fond_couleur = [];
+        for (let i = 0; i < n; i++) {
+          fond_couleur.push(this.couleurrgba());
+        }
+        return fond_couleur;
+      },
         histogram_Continue()
         {
           return histogram_Continue(this.data_echantillon, this.nb_barre);
@@ -307,25 +327,40 @@
                 
                 return Stats_descriptives(this.data_echantillon);
               },
-        renderChart() {
+              renderChart() {
           const ctx = document.getElementById('myChart').getContext('2d');
+          const colors = this.rgba_vecteur(this.nb_barre);
           this.chart = new Chart(ctx, {
             type: 'bar',
             data: {
               labels: this.values,
               datasets: [{
-                label: '',
+                label: ' ',
                 data: this.effective,
+                backgroundColor: colors,
                 borderWidth: 1,
               }]
             },
             options: {
-              scales: {
-                y: {
-                  beginAtZero: true,
-                }
-              }
-            }
+              
+  responsive: true,
+    maintainAspectRatio: false,
+  
+  categoryPercentage: 1.0, 
+    barPercentage: 1.0,  
+  scales: {
+    y: {
+      beginAtZero: true,
+    },
+  },
+  
+  plugins: {
+    legend: {
+            display: false
+         },
+     }
+},
+
           });
         }
       }
