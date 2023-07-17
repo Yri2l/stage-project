@@ -329,7 +329,7 @@
         estimationSigma() {
           //const sumSquaredDiff = this.data_echantillon.reduce((acc, val) => acc + Math.pow(val - this.estimation_mu, 2), 0);
           //return sumSquaredDiff / this.data_echantillon.length;
-          return estimateurNormale(this.data_echantillon)[1];
+          return estimateurNormale(this.data_echantillon)[1]*estimateurNormale(this.data_echantillon)[1];
         },
         Stats_descriptives() {
           return Stats_descriptives(this.data_echantillon);
