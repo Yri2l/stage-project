@@ -125,7 +125,7 @@
         </tr>
         <tr>
           <td>Simulation :</td>
-          <td>Non définie de manière explicite</td>
+          <td>si $U$ suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$ suit une loi de Weibull</td>
         </tr>
       </tbody>
     </table>
@@ -184,8 +184,8 @@
     const app = new Vue({
       el: '#app',
       data: {
-        parama: '',
-        paramb: '',
+        parama: 1,
+        paramb: 1,
         min: 0,
         max: 10,
         chart: null
@@ -223,25 +223,39 @@
           } else {
             const ctx = document.getElementById('chart').getContext('2d');
             this.chart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: labels,
-                datasets: [{
-                  label: 'Densité',
-                  data: data,
-                  backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                  borderColor: 'rgba(54, 162, 235, 1)',
-                  borderWidth: 1
-                }]
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }
-            });
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '',
+      data: data,
+      borderColor: 'blue',
+      fill: false, // Retirer le remplissage sous la courbe
+    }],
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'x',
+        },
+      },
+      y: {
+        title: {
+          display: false,
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
           }
         }
       }

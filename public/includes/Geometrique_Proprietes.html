@@ -96,10 +96,6 @@ input[type=submit] {
         <td>Loi :</td>
         <td>$$P(X = k) = (1-p)^{k-1} p, \quad k \in \{1, 2, 3, \ldots\}$$</td>
       </tr>
-      <tr>
-        <td>Simulation :</td>
-        <td>si \(U\) suit une loi uniforme sur \([0,1]\), alors \(F^{-1}(U,a,b)\) suit une loi de Weibull.</td>
-      </tr>
     </tbody>
   </table>
 </div>
@@ -134,6 +130,12 @@ input[type=submit] {
   document.getElementById("formEstimateur").addEventListener("submit", function(event) {
     event.preventDefault();
     var p = parseFloat(document.getElementById("parama").value);
+
+    if (isNaN(p) || p < 0 || p > 1) {
+      alert("Erreur : Le paramètre 'p' doit être compris entre 0 et 1");
+      return;
+    }
+
     var esperance = 1 / p;
     var variance = (1 - p) / (p * p);
 

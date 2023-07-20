@@ -96,10 +96,6 @@ input[type=submit] {
         <td>Loi :</td>
         <td>$$P(X = k) = \frac{1}{b-a+1}, \quad k \in \{a, a+1, \ldots, b\}$$</td>
       </tr>
-      <tr>
-        <td>Simulation :</td>
-        <td>si \(U\) suit une loi uniforme sur \([0,1]\), alors \(F^{-1}(U,a,b)\) suit une loi de Weibull.</td>
-      </tr>
     </tbody>
   </table>
 </div>
@@ -143,6 +139,11 @@ input[type=submit] {
     event.preventDefault();
     var a = parseInt(document.getElementById("parama").value);
     var b = parseInt(document.getElementById("paramb").value);
+    if (isNaN(a) || isNaN(b) || a >= b) {
+      alert("Erreur : Les paramètres 'a' et 'b' doivent être des nombres valides et 'a' doit être strictement inférieur à 'b'");
+      return;
+    }
+
     var esperance = (a + b) / 2;
     var variance = ((b - a + 1) ** 2 - 1) / 12;
 

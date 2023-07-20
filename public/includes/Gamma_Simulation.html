@@ -125,7 +125,6 @@
       
         <div id="tabStats" class="container tab-pane fade"><br>
           <h3>Tableau des statistiques descriptives</h3>
-          <p>ins&eacute;rer  le tableau des statistiques descriptives des donn&eacute;es</p>
         <br>
         
     <table class="table table-bordered table-hover">
@@ -207,7 +206,6 @@
     
      <div id="analyse" class="container tab-pane fade"><br>
       <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-       <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
        <div class="row">
          <div class="col-md-6">
            <table class="table table-bordered table-hover">
@@ -259,8 +257,8 @@
       data() {
         return {
           nb_echantillon: 100,
-          param1: 0,
-          param2: 0,
+          param1: 1,
+          param2: 2,
           nb_observation: 0,
           minimum: 0,
           maximum: 0,
@@ -316,6 +314,10 @@
           return histogram_Continue(this.data_echantillon, this.nb_barre);
         },
         echantillon() {
+          if (this.param1 <= 0 || this.param2 <= 0 ) {
+            alert("Erreur : a et b doivent etre supérieur à 0");
+          return;
+        }
           this.data_echantillon = echantillonsGamma(this.param1, this.param2, this.nb_echantillon);
         },
         Stats_descriptives() {

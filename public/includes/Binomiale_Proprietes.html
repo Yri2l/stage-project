@@ -125,7 +125,7 @@
               <label for="parama">\(p\)</label>
             </td>
             <td class="zoneT">
-              <input type="text" id="parama" name="parama" value="5"/>
+              <input type="text" id="parama" name="parama" value="0.5"/>
             </td>
           </tr>
           <tr>
@@ -133,7 +133,7 @@
               <label for="paramb">\(n\)</label>
             </td>
             <td class="zoneT">
-              <input type="text" id="paramb" name="paramb" value="4"/>
+              <input type="text" id="paramb" name="paramb" value="3"/>
             </td>
           </tr>
           <tr>
@@ -156,6 +156,17 @@
       event.preventDefault();
       var p = parseFloat(document.getElementById("parama").value);
       var n = parseFloat(document.getElementById("paramb").value);
+
+      if (isNaN(p) || p < 0 || p > 1) {
+        alert("Erreur : p doit etre compris entre 0 et 1");
+        return;
+      }
+
+      if (isNaN(n) || n < 0) {
+        alert("Erreur : n doit etre supérieur ou égal à 0");
+        return;
+      }
+
       var esperance = n * p;
       var variance = n * p * (1 - p);
 

@@ -124,7 +124,7 @@
         </tr>
         <tr>
           <td>Simulation :</td>
-          <td>si $U$ suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$ suit une loi de Weibull.</td>
+          <td>si $U$ suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$ suit une loi Exponentielle.</td>
         </tr>
       </tbody>
     </table>
@@ -172,62 +172,73 @@
   </div>
   <script>
     new Vue({
-      el: '#app',
-      data: {
-        parama: '5',
-        min: '0',
-        max: '10',
-        chart: null,
-      },
-      methods: {
-        plotDensity() {
-          if (this.chart) {
-            this.chart.destroy();
-          }
+    el: '#app',
+    data: {
+      parama: '5',
+      min: '0',
+      max: '10',
+      chart: null,
+    },
+    methods: {
+      plotDensity() {
+        if (this.chart) {
+          this.chart.destroy();
+        }
 
-          const lambda = parseFloat(this.parama);
-          const min = parseFloat(this.min);
-          const max = parseFloat(this.max);
-          const data = [];
-          const labels = [];
+        const lambda = parseFloat(this.parama);
 
-          for (let x = min; x <= max; x += 0.1) {
-            const density = lambda * Math.exp(-lambda * x);
-            data.push(density.toFixed(2));
-            labels.push(x.toFixed(1));
-          }
+        if (isNaN(lambda) || lambda <= 0) {
+          alert("Erreur : lambda doit etre superieur strictement a 0");
+          return;
+        }
+
+        const min = parseFloat(this.min);
+        const max = parseFloat(this.max);
+        const data = [];
+        const labels = [];
+
+        for (let x = min; x <= max; x += 0.1) {
+          const density = lambda * Math.exp(-lambda * x);
+          data.push(density.toFixed(2));
+          labels.push(x.toFixed(1));
+        }
 
           const ctx = document.getElementById('chart').getContext('2d');
           this.chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Densité',
-                data: data,
-                borderColor: 'blue',
-                backgroundColor: 'rgba(0, 0, 255, 0.2)',
-              }],
-            },
-            options: {
-              responsive: true,
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'x',
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Densité',
-                  },
-                  beginAtZero: true,
-                },
-              },
-            },
-          });
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '',
+      data: data,
+      borderColor: 'blue',
+      fill: false, // Retirer le remplissage sous la courbe
+    }],
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'x',
+        },
+      },
+      y: {
+        title: {
+          display: false,
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
+
         },
       },
       mounted() {

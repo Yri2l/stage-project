@@ -507,11 +507,11 @@ function echantillonWeibull(lambda, k, taille) {
 	}
   }*/
 
-  function estimateurWeibull(echantillon) {
+/*function estimateurWeibull(echantillon) {
 	const n = echantillon.length;
 	let a = 1; // Initialisation du paramètre a
 	let b = 1; // Initialisation du paramètre b
-  
+	
 	const learningRate = 0.01; // Taux d'apprentissage
 	const iterations = 1000; // Nombre d'itérations
   
@@ -531,27 +531,107 @@ function echantillonWeibull(lambda, k, taille) {
 	  a += learningRate * gradientA; // Mise à jour du paramètre a
 	  b += learningRate * gradientB; // Mise à jour du paramètre b
 	}
-  
+	
 	return [a, b];
+  }*/
+
+
+  
+ /* function estimateurWeibull(echantillon) {
+	// Calculer la moyenne empirique et la variance empirique de l'échantillon
+	const moyenneEmpirique = echantillon.reduce((acc, val) => acc + val, 0) / echantillon.length;
+	const varianceEmpirique = echantillon.reduce((acc, val) => acc + (val - moyenneEmpirique) ** 2, 0) / echantillon.length;
+  
+	// Estimation des paramètres de la loi Weibull à l'aide de la méthode des moments
+	const shapeEstime = Math.sqrt(varianceEmpirique) / moyenneEmpirique;
+	const scaleEstime = moyenneEmpirique / gamma(1 + 1 / shapeEstime);
+  
+	return [shapeEstime, scaleEstime];
+  }*/
+
+  
+  
+  /*function echantillonWeibull(shape, scale, tailleEchantillon) {
+	const echantillon = [];
+	for (let i = 0; i < tailleEchantillon; i++) {
+	  // Génération d'un nombre aléatoire selon la loi de Weibull
+	  const randomValue = Math.random();
+	  const weibullValue = scale * (-Math.log(1 - randomValue)) ** (1 / shape);
+	  echantillon.push(weibullValue);
+	}
+	return echantillon;
+  }*/
+  
+  // Fonction pour calculer la fonction gamma (utilisée dans estimateurWeibull)
+  function gamma(x) {
+	if (x === 1) return 1;
+	return (x - 1) * gamma(x - 1);
   }
   
   
-
-function echantillonsGamma(alpha, beta, taille) {
-  const echantillons = [];
-
-  for (let i = 0; i < taille; i++) {
-    let echantillon = 0;
-    for (let j = 0; j < beta; j++) {
-      const u = Math.random();
-      echantillon -= Math.log(u);
-    }
-    echantillon /= alpha;
-    echantillons.push(echantillon);
+  function estimateurWeibull(echantillon, maxIterations = 1000, tolerance = 1e-6) {
+	// Calcul des moments d'ordre 1 (moyenne) et 2 (variance)
+	const mean = echantillon.reduce((acc, val) => acc + val, 0) / echantillon.length;
+	const variance = echantillon.reduce((acc, val) => acc + (val - mean) ** 2, 0) / echantillon.length;
+  
+	// Initialisation des paramètres en utilisant les moments
+	let shape = Math.pow(variance / (mean ** 2), -1 / 2);
+	let scale = mean / shape;
+  
+	// Fonction de log-vraisemblance pour la loi de Weibull
+	function logLikelihood(shape, scale) {
+	  return echantillon.reduce((acc, val) => acc + Math.log(shape / scale) + (shape - 1) * Math.log(val / scale) - (val / scale) ** shape, 0);
+	}
+  
+	// Dérivée partielle de la log-vraisemblance par rapport au paramètre de forme (shape)
+	function gradientShape(shape, scale) {
+	  return echantillon.reduce((acc, val) => acc + Math.log(val / scale) - (val / scale) ** shape * Math.log(val / scale), 0);
+	}
+  
+	// Dérivée partielle de la log-vraisemblance par rapport au paramètre d'échelle (scale)
+	function gradientScale(shape, scale) {
+	  return echantillon.reduce((acc, val) => acc + (shape / scale) * ((val / scale) ** shape - 1), 0);
+	}
+  
+	// Algorithme de Newton-Raphson pour maximiser la log-vraisemblance
+	let iteration = 0;
+	let previousLikelihood = logLikelihood(shape, scale);
+	let currentLikelihood = previousLikelihood;
+  
+	while (iteration < maxIterations && Math.abs(currentLikelihood - previousLikelihood) > tolerance) {
+	  // Mise à jour des paramètres en utilisant la méthode de Newton-Raphson
+	  const hessianShapeShape = echantillon.reduce((acc, val) => acc - (val / scale) ** shape * Math.log(val / scale) ** 2, 0);
+	  const hessianShapeScale = echantillon.reduce((acc, val) => acc + (val / scale) ** shape * Math.log(val / scale), 0);
+	  const hessianScaleScale = echantillon.reduce((acc, val) => acc - (shape / (scale ** 2)) * ((val / scale) ** shape - 1), 0);
+  
+	  const determinantHessian = hessianShapeShape * hessianScaleScale - hessianShapeScale ** 2;
+  
+	  const updateShape = (gradientScale(shape, scale) * hessianShapeScale - gradientShape(shape, scale) * hessianScaleScale) / determinantHessian;
+	  const updateScale = (gradientShape(shape, scale) * hessianScaleScale - gradientScale(shape, scale) * hessianShapeShape) / determinantHessian;
+  
+	  shape -= updateShape;
+	  scale -= updateScale;
+  
+	  // Calcul de la nouvelle log-vraisemblance
+	  previousLikelihood = currentLikelihood;
+	  currentLikelihood = logLikelihood(shape, scale);
+  
+	  iteration++;
+	}
+  
+	return [scale, shape];
   }
 
-  return echantillons;
-}
+function echantillonsGamma(shape, scale,tailleEchantillon) {
+	const echantillon = [];
+	for (let i = 0; i < tailleEchantillon; i++) {
+	  // Génération d'un nombre aléatoire selon la loi gamma
+	  const randomValue = Math.random();
+	  const gammaValue = -scale * Math.log(randomValue) ** (1 / shape);
+	  echantillon.push(gammaValue);
+	}
+	return echantillon;
+  }
 // Fonction pour calculer la moyenne d'un tableau de données
 function mean(data) {
 	var sum = data.reduce(function(a, b) {
@@ -656,54 +736,28 @@ function mean(data) {
 	return params;
   }
   // Algorithme pour trouver l'estimateur de vraisemblance maximale des paramètres alpha et beta de la loi gamma
-function estimateurs_gamma(data) {
-	// Définition des fonctions de calcul de la log-vraisemblance et de son gradient
-	function logVraisemblance(params) {
-	  var alpha = params[0];
-	  var beta = params[1];
-	  var logLikelihood = 0;
-	  for (var i = 0; i < data.length; i++) {
-		logLikelihood += (alpha - 1) * Math.log(data[i]) - beta * data[i] - alpha * Math.log(beta) - Math.log(gamma(alpha));
-	  }
-	  return -logLikelihood;
-	}
-  
-	function gradient(params) {
-	  var alpha = params[0];
-	  var beta = params[1];
-	  var gradAlpha = 0;
-	  var gradBeta = 0;
-	  for (var i = 0; i < data.length; i++) {
-		gradAlpha += Math.log(data[i]) - Math.log(beta) - psi(alpha);
-		gradBeta += (alpha / beta) - data[i];
-	  }
-	  return [-gradAlpha, -gradBeta];
-	}
-  
-	// Initialisation des paramètres
-	var alphaInit = 1;
-	var betaInit = 1;
-	var paramsInit = [alphaInit, betaInit];
-  
-	// Minimisation de la log-vraisemblance en utilisant l'algorithme du gradient
-	var result = gradientDescent(logVraisemblance, gradient, paramsInit);
-  
-	// Estimation des paramètres alpha et beta
-	var alphaEstimateur = result[0];
-	var betaEstimateur = result[1];
-  
-	return [alphaEstimateur, betaEstimateur];
-  }
+function estimateurGamma(echantillon) {
+  // Calculer la moyenne empirique et la variance empirique de l'échantillon
+  const moyenneEmpirique = echantillon.reduce((acc, val) => acc + val, 0) / echantillon.length;
+  const varianceEmpirique = echantillon.reduce((acc, val) => acc + (val - moyenneEmpirique) ** 2, 0) / echantillon.length;
+
+  // Estimation des paramètres de la loi gamma à l'aide de la méthode des moments
+  const alphaEstime = moyenneEmpirique ** 2 / varianceEmpirique;
+  const betaEstime = varianceEmpirique / moyenneEmpirique;
+
+  return [alphaEstime,betaEstime];
+}
+
   
    // Algorithme pour trouver le premier estimateur de vraisemblance maximale (paramètre alpha)
 function estimateur_gamma_1(data) {
 
-	return estimateurs_gamma(data);
+	return estimateurGamma(data)[0];
   }
   
   // Algorithme pour trouver le deuxième estimateur de vraisemblance maximale (paramètre beta)
   function estimateur_gamma_2(data) {
-	return estimateurs_gamma(data);
+	return estimateurGamma(data)[1];
   }
   
 
@@ -732,4 +786,5 @@ function estimateur_gamma_1(data) {
 	return estimator_b;
   }
   
+
 ///////////////////////////////////////////////////

@@ -111,7 +111,6 @@
       
         <div id="tabStats" class="container tab-pane fade"><br>
           <h3>Tableau des statistiques descriptives</h3>
-          <p>ins&eacute;rer  le tableau des statistiques descriptives des donn&eacute;es</p>
         <br>
         
     <table class="table table-bordered table-hover">
@@ -180,7 +179,6 @@
     <!-- Histogramme 	 -->
         <div id="histo" class="container tab-pane fade"><br>
           <h3>Histogramme Des donn&eacute;es</h3>
-          <p>ins&eacute;rer  l'histogramme des donn&eacute;es</p>
           <div class="chartCard">
             <div class="chartBox">
               <canvas id="myChart"></canvas>
@@ -194,7 +192,6 @@
     
         <div id="analyse" class="container tab-pane fade"><br>
          <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-          <p>ins&eacute;rer  Analyse et Estimation des donn&eacute;es</p>
           <div class="row">
             <div class="col-md-6">
               <table class="table table-bordered table-hover">
@@ -301,6 +298,10 @@
         },
         echantillon()
               {
+                if (this.param1 > 1 || this.param1 < 0) {
+            alert("Erreur : p doit être compris entre 0 et 1");
+          return;
+        }
                 this.data_echantillon = echantillonGeometrique(this.param1, this.nb_echantillon);
               },
         Stats_descriptives()
@@ -310,7 +311,7 @@
               },
               renderChart() {
   const ctx = document.getElementById('myChart').getContext('2d');
-  const colors = this.rgba_vecteur(5);
+  const colors = this.rgba_vecteur(100);
 
   this.chart = new Chart(ctx, {
     type: 'bar',

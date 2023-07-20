@@ -125,7 +125,7 @@
               <label for="parama">\(\theta\)</label>
             </td>
             <td class="zoneT">
-              <input type="text" id="parama" name="parama" value="5"/>
+              <input type="text" id="parama" name="parama" value="0.5"/>
             </td>
           </tr>
           <tr>
@@ -146,6 +146,10 @@
     document.getElementById("formEstimateur").addEventListener("submit", function(event) {
       event.preventDefault();
       var theta = parseFloat(document.getElementById("parama").value);
+      if (theta < 0 || theta > 1) {
+            alert("Erreur : θ doit être compris entre 0 et 1");
+          return;
+    }
       var esperance = theta;
       var variance = theta * (1 - theta);
 

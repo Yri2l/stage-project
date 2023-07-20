@@ -125,7 +125,7 @@
         </tr>
         <tr>
           <td>Simulation :</td>
-          <td>Non définie de manière explicite</td>
+          <td>si $U$ suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$ suit une loi Uniforme Continue</td>
         </tr>
       </tbody>
     </table>
@@ -199,6 +199,10 @@
           const b = parseFloat(this.paramb);
           const min = parseFloat(this.min);
           const max = parseFloat(this.max);
+          if (isNaN(a) || isNaN(b) || a >= b) {
+          alert("Erreur : Les paramètres 'a' et 'b' doivent être des nombres valides et 'a' doit être strictement inférieur à 'b'");
+          return;
+        }
           const data = [];
           const labels = [];
 
@@ -210,35 +214,40 @@
 
           const ctx = document.getElementById('chart').getContext('2d');
           this.chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Densité',
-                data: data,
-                borderColor: 'blue',
-                backgroundColor: 'rgba(0, 0, 255, 0.2)',
-              }],
-            },
-            options: {
-              responsive: true,
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'x',
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Densité',
-                  },
-                  beginAtZero: true,
-                },
-              },
-            },
-          });
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '',
+      data: data,
+      borderColor: 'blue',
+      fill: false, // Retirer le remplissage sous la courbe
+    }],
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'x',
+        },
+      },
+      y: {
+        title: {
+          display: false,
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
+
         },
       },
       mounted() {

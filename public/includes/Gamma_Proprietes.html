@@ -125,7 +125,26 @@
         </tr>
         <tr>
           <td>Simulation :</td>
-          <td>Non définie de manière explicite</td>
+          <td>Cas 1: c < 1<br>
+            Soit β = 1 + c/e.<br>
+            Soit U1 ~ U(0, 1), β = 1 + c/e Si P = βU1 > 1 <br>
+            alors : 
+            (1) Générer U1 ~ U(0, 1) et définir P = βU1.
+            Si P > 1, passer à l'étape 3; sinon, passer à l'étape 2.<br>
+            (2) Définir Y = P<sup>1/c</sup> et générer U2 ~ U(0, 1).
+            Si U2 ≤ e<sup>-Y</sup>, retourner X = Y ; sinon, retourner à l'étape 1.<br>
+            (3) Définir Y = -ln [(β - P)/c] et générer U2 ~ U(0, 1).
+            Si U2 ≤ Y c<sup>-1</sup>, retourner X = Y ; sinon, retourner à l'étape 1. <br>
+            
+            Cas 2: c = 1<br>
+            Retourner $\displaystyle F^{-1}$ ~ exponentielle(a, b).<br>
+            
+            Cas 3: c > 1<br>
+            Soit α = 1/√(2c-1), β = c - ln 4, q = c + 1/α, θ = 4.5 et d = 1 + lnθ.<br>
+            (1) Générer deux variables uniformes indépendantes, U1 ~ U(0, 1) et U2 ~ U(0, 1).<br>
+            (2) Définir V = α ln [U1/(1 - U1)], Y = ce<sup>V</sup>, Z = U2/(1-U2) et W = β + qV - Y.<br>
+            (3) Si W + d - θZ ≥ 0, retourner X = Y ; sinon, passer à l'étape 4.<br>
+            (4) Si W ≥ ln Z, retourner X = Y ; sinon, retourner à l'étape 1.</td>
         </tr>
       </tbody>
     </table>
@@ -181,64 +200,79 @@
   </div>
   <script>
     new Vue({
-      el: '#app',
-      data: {
-        parama: '2',
-        paramb: '3',
-        min: '0',
-        max: '10',
-        chart: null,
-      },
-      methods: {
-        plotDensity() {
-          if (this.chart) {
-            this.chart.destroy();
-          }
+    el: '#app',
+    data: {
+      parama: '2',
+      paramb: '3',
+      min: '0',
+      max: '10',
+      chart: null,
+    },
+    methods: {
+      plotDensity() {
+        if (this.chart) {
+          this.chart.destroy();
+        }
 
-          const alpha = parseFloat(this.parama);
-          const beta = parseFloat(this.paramb);
-          const min = parseFloat(this.min);
-          const max = parseFloat(this.max);
-          const data = [];
-          const labels = [];
+        const alpha = parseFloat(this.parama);
+        const beta = parseFloat(this.paramb);
 
-          for (let x = min; x <= max; x += 0.05) {
-            const density = (Math.pow(beta, alpha) / math.gamma(alpha)) * Math.pow(x, alpha - 1) * Math.exp(-beta * x);
-            data.push(density.toFixed(2));
-            labels.push(x.toFixed(1));
-          }
+        if (isNaN(alpha) || alpha <= 0 || isNaN(beta) || beta <= 0) {
+          alert("Erreur : Les paramètres 'a' et 'b' doivent être strictement supérieurs à 0");
+          return;
+        }
+
+        const min = parseFloat(this.min);
+        const max = parseFloat(this.max);
+        const data = [];
+        const labels = [];
+
+        for (let x = min; x <= max; x += 0.05) {
+          const density = (Math.pow(beta, alpha) / math.gamma(alpha)) * Math.pow(x, alpha - 1) * Math.exp(-beta * x);
+          data.push(density.toFixed(2));
+          labels.push(x.toFixed(1));
+        }
 
           const ctx = document.getElementById('chart').getContext('2d');
           this.chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: labels,
-              datasets: [{
-                label: 'Densité',
-                data: data,
-                borderColor: 'blue',
-                backgroundColor: 'rgba(0, 0, 255, 0.2)',
-              }],
-            },
-            options: {
-              responsive: true,
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'x',
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Densité',
-                  },
-                  beginAtZero: true,
-                },
-              },
-            },
-          });
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '',
+      data: data,
+      borderColor: 'blue',
+      fill: false, // Retirer le remplissage sous la courbe
+    }],
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'x',
+        },
+      },
+      y: {
+        title: {
+          display: false,
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
+
+
+
+
+
         },
       },
       mounted() {

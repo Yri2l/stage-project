@@ -115,7 +115,6 @@
   
     <div id="tabStats" class="container tab-pane fade"><br>
       <h3>Tableau des statistiques descriptives</h3>
-      <p>ins&eacute;rer  le tableau des statistiques descriptives des donn&eacute;es</p>
 	  <br>
 	  
     <table class="table table-bordered table-hover">
@@ -184,7 +183,6 @@
     <!-- Histogramme 	 -->
     <div id="histo" class="container tab-pane fade"><br>
       <h3>Histogramme Des donn&eacute;es</h3>
-      <p>ins&eacute;rer  l'histogramme des donn&eacute;es</p>
       <div class="chartCard">
         <div class="chartBox">
           <canvas id="myChart"></canvas>
@@ -193,8 +191,29 @@
     </div>
 	
 	<div id="Estimation" class="container tab-pane fade"><br>
-      <h3>Estimation de param&egrave;tre</h3>
-      <p>inclure et interpr&eacute;ter  </p>
+    <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table table-bordered table-hover">
+          <thead style="background-color: blue;color: white; font-size: 17px;">
+            <tr>
+              <th scope="col">Estimateurs</th>
+              <th scope="col">Valeurs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Estimateur de vraisemblance maximum a</td>
+              <td>{{evm_gamma_1}}</td>
+            </tr>
+            <tr>
+             <td>Estimateur de vraisemblance maximum b</td>
+             <td>{{evm_gamma_2}}</td>
+           </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
 	</div>
   
@@ -226,11 +245,16 @@
         this.renderChart();
       },
       computed: {
-
               stat_desc()
               {
                 return this.Stats_descriptives();
-              }
+              },
+        evm_gamma_1(){
+          return this.estimateur_gamma_1();
+        },
+        evm_gamma_2(){
+          return this.estimateur_gamma_2();
+        }
       },
       methods: {
         handleFileChange(event) {
@@ -249,6 +273,12 @@
           event.preventDefault();
           // Faites quelque chose avec les données soumises
         },
+        estimateur_gamma_1(){
+          return estimateur_gamma_1(this.data_echantillon);
+        },
+        estimateur_gamma_2(){
+          return estimateur_gamma_2(this.data_echantillon);
+        },
         updateChart() {
           // Mettez à jour les données du graphique
           this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
@@ -262,9 +292,21 @@
           // Mettez à jour le graphique
           this.chart.update();
         },
-        rgba_vecteur(){
-          return rgba_vecteur(this.nb_echantillon);
-        },
+        couleurrgba() {
+        let r = Math.floor(20 + Math.random() * 230);
+        let g = Math.floor(20 + Math.random() * 230);
+        let b = Math.floor(20 + Math.random() * 230);
+        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        return color;
+      },
+      rgba_vecteur(n) {
+        fond_couleur = [];
+        for (let i = 0; i < n; i++) {
+          fond_couleur.push(this.couleurrgba());
+        }
+        return fond_couleur;
+      },
         histogram_Continue()
         {
           return histogram_Continue(this.data_echantillon, this.nb_barre);
@@ -290,10 +332,10 @@
             },
             options: {
               
-  responsive: true,
+	responsive: true,
     maintainAspectRatio: false,
-  
-  categoryPercentage: 1.0, 
+	
+	categoryPercentage: 1.0, 
     barPercentage: 1.0,  
   scales: {
     y: {
@@ -302,10 +344,10 @@
   },
   
   plugins: {
-    legend: {
+		legend: {
             display: false
          },
-     }
+		 }
 },
 
           });

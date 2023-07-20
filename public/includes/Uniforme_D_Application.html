@@ -109,7 +109,6 @@
   
     <div id="tabStats" class="container tab-pane fade"><br>
       <h3>Tableau des statistiques descriptives</h3>
-      <p>ins&eacute;rer  le tableau des statistiques descriptives des donn&eacute;es</p>
 	  <br>
 	  
     <table class="table table-bordered table-hover">
@@ -178,7 +177,6 @@
     <!-- Histogramme 	 -->
     <div id="histo" class="container tab-pane fade"><br>
       <h3>Histogramme Des donn&eacute;es</h3>
-      <p>ins&eacute;rer  l'histogramme des donn&eacute;es</p>
       <div class="chartCard">
         <div class="chartBox">
           <canvas id="myChart"></canvas>
@@ -187,8 +185,29 @@
     </div>
 	
 	<div id="Estimation" class="container tab-pane fade"><br>
-      <h3>Estimation de param&egrave;tre</h3>
-      <p>inclure et interpr&eacute;ter  </p>
+    <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table table-bordered table-hover">
+          <thead style="background-color: blue;color: white; font-size: 17px;">
+            <tr>
+              <th scope="col">Estimateurs</th>
+              <th scope="col">Valeurs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Estimateur de vraisemblance maximum a</td>
+              <td>{{stat_desc["minimum"]}}</td>
+            </tr>
+            <tr>
+             <td>Estimateur de vraisemblance maximum b</td>
+             <td>{{stat_desc["maximum"]}}</td>
+           </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
 	</div>
   
@@ -289,7 +308,7 @@
               },
               renderChart() {
   const ctx = document.getElementById('myChart').getContext('2d');
-  const colors = this.rgba_vecteur(this.nb_barre);
+  const colors = this.rgba_vecteur(100);
 
   this.chart = new Chart(ctx, {
     type: 'bar',

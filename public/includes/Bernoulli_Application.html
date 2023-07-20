@@ -110,7 +110,6 @@
   
     <div id="tabStats" class="container tab-pane fade"><br>
       <h3>Tableau des statistiques descriptives</h3>
-      <p>ins&eacute;rer  le tableau des statistiques descriptives des donn&eacute;es</p>
 	  <br>
 	  
     <table class="table table-bordered table-hover">
@@ -179,7 +178,6 @@
     <!-- Histogramme 	 -->
     <div id="histo" class="container tab-pane fade"><br>
       <h3>Histogramme Des donn&eacute;es</h3>
-      <p>ins&eacute;rer  l'histogramme des donn&eacute;es</p>
       <div class="chartCard">
         <div class="chartBox">
           <canvas id="myChart"></canvas>
@@ -188,8 +186,25 @@
     </div>
 	
 	<div id="Estimation" class="container tab-pane fade"><br>
-      <h3>Estimation de param&egrave;tre</h3>
-      <p>inclure et interpr&eacute;ter  </p>
+    <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
+    <div class="row">
+      <div class="col-md-6">
+        <table class="table table-bordered table-hover">
+          <thead style="background-color: blue;color: white; font-size: 17px;">
+            <tr>
+              <th scope="col">Estimateurs</th>
+              <th scope="col">Valeurs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Estimateur de vraisemblance maximum</td>
+              <td>{{ stat_desc['moyenne'] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
 	</div>
   
@@ -255,9 +270,21 @@
           // Mettez à jour le graphique
           this.chart.update();
         },
-        rgba_vecteur(){
-          return rgba_vecteur(this.nb_echantillon);
-        },
+        couleurrgba() {
+        let r = Math.floor(20 + Math.random() * 230);
+        let g = Math.floor(20 + Math.random() * 230);
+        let b = Math.floor(20 + Math.random() * 230);
+        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        return color;
+      },
+      rgba_vecteur(n) {
+        fond_couleur = [];
+        for (let i = 0; i < n; i++) {
+          fond_couleur.push(this.couleurrgba());
+        }
+        return fond_couleur;
+      },
         getUniqueCount()
         {
           return getUniqueCount(this.data_echantillon);
@@ -268,26 +295,39 @@
                 return Stats_descriptives(this.data_echantillon);
               },
         renderChart() {
-          const ctx = document.getElementById('myChart').getContext('2d');
-          this.chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: this.values,
-              datasets: [{
-                label: '',
-                data: this.effective,
-                borderWidth: 1,
-              }]
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true,
-                }
-              }
-            }
-          });
-        }
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const colors = this.rgba_vecteur(2);
+
+  this.chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: this.values,
+      datasets: [{
+        label: ' ',
+        data: this.effective,
+        backgroundColor: colors,
+        borderWidth: 1,
+        barThickness: 'flex',
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      categoryPercentage: 1.0,
+      barPercentage: 0.8,
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+    },
+  });
+}
       }
     });
    

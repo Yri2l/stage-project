@@ -96,10 +96,6 @@ input[type=submit] {
         <td>Loi :</td>
         <td>$$P(X = k) = \frac{e^{-\lambda}\lambda^k}{k!}, \quad k \in \{0, 1, 2, \ldots\}$$</td>
       </tr>
-      <tr>
-        <td>Simulation :</td>
-        <td>si \(U\) suit une loi uniforme sur \([0,1]\), alors \(F^{-1}(U,a,b)\) suit une loi de Weibull.</td>
-      </tr>
     </tbody>
   </table>
 </div>
@@ -130,10 +126,16 @@ input[type=submit] {
   <div id="resultatEstimateur"></div>
 </div>
 
-<script type="text/javascript">
+<script>
   document.getElementById("formEstimateur").addEventListener("submit", function(event) {
     event.preventDefault();
     var lambda = parseFloat(document.getElementById("parama").value);
+
+    if (isNaN(lambda) || lambda <= 0) {
+      alert("Erreur : Le paramètre 'lambda' doit être strictement supérieur à 0");
+      return;
+    }
+
     var esperance = lambda;
     var variance = lambda;
 
