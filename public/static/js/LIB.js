@@ -25,8 +25,8 @@ function Moments_centre_r(data,r) {
 function Stats_descriptives(data) {
 	let Stats = {};
 	Stats["nombre d'observation"] = data.length;
-	Stats["minimum"] = Math.min(...data);
-	Stats["maximum"] = Math.max(...data);
+	Stats["minimum"] = Math.min(...data).toFixed(4);
+	Stats["maximum"] = Math.max(...data).toFixed(4);
 	Stats["moyenne"] = Moments_r(data, 1).toFixed(4);
 	Stats["variance"] = Moments_centre_r(data, 2).toFixed(4);
   
@@ -63,7 +63,7 @@ function Stats_descriptives_html(data) {
 	
 	
 // uniques et effectifs pour les données discrètes
-function getUniqueCount(data) {
+/*function getUniqueCount(data) {
 	let X1=data.sort();
 	let uniqueCount = {}; // dictionnaire pour modalités et effectifs
 	modalite=[];
@@ -87,8 +87,26 @@ function getUniqueCount(data) {
 	return [uniqueCount,modalite,compte];
 
 
-	}
+	}*/
+function getUniqueCount(data) {
+	let uniqueCount = {};
+  for (const element of data) {
+    if (uniqueCount[element]) {
+      uniqueCount[element] += 1;
+    } else {
+      uniqueCount[element] = 1;
+    }
+  }
 
+  let abscisse = [];
+  let ordonnee = [];
+  for (const key of Object.keys(uniqueCount).sort((a, b) => a - b)) {
+    abscisse.push(parseInt(key, 10)); // Convertir en entier
+    ordonnee.push(uniqueCount[key]);
+  }
+
+  return [abscisse, ordonnee];
+}
 // simulation d'une chaîne de caractères de longueur 6
 function UnelettreAlea() {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -130,8 +148,8 @@ function HistoDiscret(data){
 	
 	let comptage = getUniqueCount(data);
 	//const S=comptage[0];
-	const valeurs=comptage[1];
-	const effectifs=comptage[2];
+	const valeurs=comptage[0];
+	const effectifs=comptage[1];
 	
 	
 	let size = valeurs.length;

@@ -260,8 +260,8 @@
         },
         updateChart() {
           // Mettez à jour les données du graphique
-          this.values = this.getUniqueCount()[1];
-          this.effective = this.getUniqueCount()[2];
+          this.values = this.getUniqueCount()[0];
+          this.effective = this.getUniqueCount()[1];
 
           // Mettez à jour les données du graphique existant
           this.chart.data.labels = this.values;
