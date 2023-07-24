@@ -123,10 +123,6 @@
           <td>Fonction de r&eacute;partition r&eacute;ciproque:</td>
           <td>$$F^{-1}(p, a, b) = b \left(-\ln(1 - p)\right)^{\frac{1}{a}}, \quad 0 \leq p \leq 1$$</td>
         </tr>
-        <tr>
-          <td>Simulation :</td>
-          <td>si $U$ suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$ suit une loi de Weibull</td>
-        </tr>
       </tbody>
     </table>
     <div id="chart-container">
@@ -193,70 +189,75 @@
       methods: {
         plotDensity() {
           const a = parseFloat(this.parama);
-          const b = parseFloat(this.paramb);
-          const xmin = parseFloat(this.min);
-          const xmax = parseFloat(this.max);
+const b = parseFloat(this.paramb);
+const xmin = parseFloat(this.min);
+const xmax = parseFloat(this.max);
 
-          if (isNaN(a) || isNaN(b) || isNaN(xmin) || isNaN(xmax)) {
-            alert("Veuillez entrer des valeurs numériques valides.");
-            return;
-          }
+if (isNaN(a) || isNaN(b) || isNaN(xmin) || isNaN(xmax)) {
+  alert("Veuillez entrer des valeurs numériques valides.");
+  return;
+}
 
-          if (a <= 0 || b <= 0 || xmin >= xmax) {
-            alert("Veuillez entrer des valeurs valides : a > 0, b > 0, xmin < xmax");
-            return;
-          }
+if (a <= 0 || b <= 0 || xmin >= xmax) {
+  alert("Veuillez entrer des valeurs valides : a > 0, b > 0, xmin < xmax");
+  return;
+}
 
-          const labels = [];
-          const data = [];
+const numPoints = 300; // Le nombre de points que vous souhaitez pour le graphique
+const stepSize = (xmax - xmin) / (numPoints - 1); // Calcule l'incrément pour subdiviser l'intervalle
 
-          for (let x = xmin; x <= xmax; x += 0.1) {
-            labels.push(x.toFixed(1));
-            const density = (a / b) * Math.pow(x / b, a - 1) * Math.exp(-Math.pow(x / b, a));
-            data.push(density.toFixed(3));
-          }
+const labels = [];
+const data = [];
 
-          if (this.chart) {
-            this.chart.data.labels = labels;
-            this.chart.data.datasets[0].data = data;
-            this.chart.update();
-          } else {
-            const ctx = document.getElementById('chart').getContext('2d');
-            this.chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: '',
-      data: data,
-      borderColor: 'blue',
-      fill: false, // Retirer le remplissage sous la courbe
-    }],
-  },
-  options: {
-    responsive: true,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'x',
+for (let i = 0; i < numPoints; i++) {
+  const x = xmin + i * stepSize; // Calcule la valeur de x pour chaque point
+  labels.push(x.toFixed(3));
+  const density = (a / b) * Math.pow(x / b, a - 1) * Math.exp(-Math.pow(x / b, a));
+  data.push(density.toFixed(3));
+}
+
+if (this.chart) {
+  this.chart.data.labels = labels;
+  this.chart.data.datasets[0].data = data;
+  this.chart.update();
+} else {
+  const ctx = document.getElementById('chart').getContext('2d');
+  this.chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '',
+        data: data,
+        borderColor: 'blue',
+        fill: false, // Retirer le remplissage sous la courbe
+      }],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'x',
+          },
+        },
+        y: {
+          title: {
+            display: false,
+          },
+          beginAtZero: true,
         },
       },
-      y: {
-        title: {
+      plugins: {
+        legend: {
           display: false,
         },
-        beginAtZero: true,
       },
     },
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-  },
-});
-          }
+  });
+}
+
         }
       }
     });

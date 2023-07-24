@@ -446,33 +446,49 @@ function echantillonNormale(mu, sigma, taille) {
 }
 
 function estimateurNormale(echantillon) {
-	const n = echantillon.length;
-	let mu = 0;
-	let sigma = 1;
-	const learningRate = 0.01;
-	const numIterations = 1000;
-  
-	for (let i = 0; i < numIterations; i++) {
-	  let sumGradMu = 0;
-	  let sumGradSigma = 0;
-  
-	  for (let j = 0; j < n; j++) {
-		const x = echantillon[j];
-		const gradMu = (x - mu) / (sigma * sigma);
-		const gradSigma = ((x - mu) * (x - mu) - sigma * sigma) / (sigma * sigma * sigma);
-		sumGradMu += gradMu;
-		sumGradSigma += gradSigma;
-	  }
-  
-	  const updateMu = (learningRate / n) * sumGradMu;
-	  const updateSigma = (learningRate / n) * sumGradSigma;
-  
-	  mu += updateMu;
-	  sigma += updateSigma;
-	}
-  
-	return [mu, sigma];
+  const n = echantillon.length;
+  let mu = 0;
+  let sigmaSquared = 0; // Carré de la variance
+  const learningRate = 0.01;
+  const numIterations = 1000;
+
+  // Calcul de la moyenne empirique
+  for (let i = 0; i < n; i++) {
+    mu += echantillon[i];
   }
+  mu /= n;
+
+  // Calcul de la variance empirique
+  for (let i = 0; i < n; i++) {
+    sigmaSquared += Math.pow(echantillon[i] - mu, 2);
+  }
+  sigmaSquared /= n;
+
+  let sigma = Math.sqrt(sigmaSquared); // Calcul de l'écart-type à partir de la variance
+
+  for (let i = 0; i < numIterations; i++) {
+    let sumGradMu = 0;
+    let sumGradSigma = 0;
+
+    for (let j = 0; j < n; j++) {
+      const x = echantillon[j];
+      const gradMu = (x - mu) / (sigma * sigma);
+      const gradSigma = ((x - mu) * (x - mu) - sigmaSquared) / (sigma * sigma * sigma);
+      sumGradMu += gradMu;
+      sumGradSigma += gradSigma;
+    }
+
+    const updateMu = (learningRate / n) * sumGradMu;
+    const updateSigma = (learningRate / n) * sumGradSigma;
+
+    mu += updateMu;
+    sigmaSquared += updateSigma;
+    sigma = Math.sqrt(sigmaSquared); // Mettre à jour l'écart-type à partir de la nouvelle variance
+  }
+
+  return [mu, sigma];
+}
+
   
   
   
@@ -582,65 +598,96 @@ function echantillonWeibull(lambda, k, taille) {
   
   // Fonction pour calculer la fonction gamma (utilisée dans estimateurWeibull)
   function gamma(x) {
-	if (x === 1) return 1;
-	return (x - 1) * gamma(x - 1);
+	const sqrtTwoPi = Math.sqrt(2 * Math.PI);
+	const g = 7;
+	const coefficients = [
+	  0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+	  771.32342877765313, -176.61502916214059, 12.507343278686905,
+	  -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+	];
+  
+	if (x < 0.5) {
+	  return Math.PI / (Math.sin(Math.PI * x) * gamma(1 - x));
+	}
+  
+	x -= 1;
+	let a = coefficients[0];
+	let t = x + g + 0.5;
+  
+	for (let i = 1; i < coefficients.length; i++) {
+	  a += coefficients[i] / (x + i);
+	}
+  
+	return sqrtTwoPi * Math.pow(t, x + 0.5) * Math.exp(-t) * a;
   }
   
   
+  function digamma(x) {
+	// Coefficients pour la série de Stieltjes
+	const coefficients = [
+	  1.0,
+	  1 / 12.0,
+	  -1 / 120.0,
+	  1 / 252.0,
+	  -1 / 240.0,
+	  1 / 132.0,
+	  -691 / 32760.0,
+	  1 / 12.0,
+	  -3617 / 8160.0
+	];
+  
+	if (x <= 0) {
+	  // La fonction digamma n'est pas définie pour les nombres entiers négatifs ou nuls
+	  return NaN;
+	}
+  
+	// Initialisation de la valeur de la fonction digamma
+	let psi = -0.5772156649015328606065121; // Valeur de digamma(1) (constante d'Euler)
+  
+	// Calcul de la série de Stieltjes pour améliorer la précision
+	let term = 1 / x;
+	for (let k = 0; k < coefficients.length; k++) {
+	  term = coefficients[k] * (x ** (2 * k + 1));
+	  psi += term;
+	}
+  
+	return psi;
+  }
+  // Fonction d'estimation des paramètres de la distribution Weibull par la méthode de Newton-Raphson
   function estimateurWeibull(echantillon, maxIterations = 1000, tolerance = 1e-6) {
-	// Calcul des moments d'ordre 1 (moyenne) et 2 (variance)
-	const mean = echantillon.reduce((acc, val) => acc + val, 0) / echantillon.length;
-	const variance = echantillon.reduce((acc, val) => acc + (val - mean) ** 2, 0) / echantillon.length;
+	const n = echantillon.length;
+	if(n==0)
+		return [0,0];
+	// Calcul des moments empiriques
+	const mean = echantillon.reduce((sum, x) => sum + x, 0) / n;
+	const variance = echantillon.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / n;
+	const stdDeviation = Math.sqrt(variance);
   
-	// Initialisation des paramètres en utilisant les moments
-	let shape = Math.pow(variance / (mean ** 2), -1 / 2);
-	let scale = mean / shape;
+	// Initialisation du paramètre c avec une valeur arbitraire
+	let c = 1;
   
-	// Fonction de log-vraisemblance pour la loi de Weibull
-	function logLikelihood(shape, scale) {
-	  return echantillon.reduce((acc, val) => acc + Math.log(shape / scale) + (shape - 1) * Math.log(val / scale) - (val / scale) ** shape, 0);
+	// Itération de la méthode de Newton-Raphson pour trouver la valeur de c
+	for (let i = 0; i < maxIterations; i++) {
+	  const prevC = c;
+	  const term1 = gamma(1 + 2 / c) - Math.pow( gamma(1 + 1 / c), 2);
+	  const term2 = stdDeviation / mean * gamma(1 + 1 / c);
+	  c = prevC - term1 / (2 * prevC * term2);
+  
+	  // Vérification de la convergence
+	  if (Math.abs(c - prevC) < tolerance) {
+		break;
+	  }
 	}
   
-	// Dérivée partielle de la log-vraisemblance par rapport au paramètre de forme (shape)
-	function gradientShape(shape, scale) {
-	  return echantillon.reduce((acc, val) => acc + Math.log(val / scale) - (val / scale) ** shape * Math.log(val / scale), 0);
-	}
+	// Calcul de alpha à partir de c et des moments empiriques
+	const alpha = mean /  gamma(1 + 1 / c);
   
-	// Dérivée partielle de la log-vraisemblance par rapport au paramètre d'échelle (scale)
-	function gradientScale(shape, scale) {
-	  return echantillon.reduce((acc, val) => acc + (shape / scale) * ((val / scale) ** shape - 1), 0);
-	}
-  
-	// Algorithme de Newton-Raphson pour maximiser la log-vraisemblance
-	let iteration = 0;
-	let previousLikelihood = logLikelihood(shape, scale);
-	let currentLikelihood = previousLikelihood;
-  
-	while (iteration < maxIterations && Math.abs(currentLikelihood - previousLikelihood) > tolerance) {
-	  // Mise à jour des paramètres en utilisant la méthode de Newton-Raphson
-	  const hessianShapeShape = echantillon.reduce((acc, val) => acc - (val / scale) ** shape * Math.log(val / scale) ** 2, 0);
-	  const hessianShapeScale = echantillon.reduce((acc, val) => acc + (val / scale) ** shape * Math.log(val / scale), 0);
-	  const hessianScaleScale = echantillon.reduce((acc, val) => acc - (shape / (scale ** 2)) * ((val / scale) ** shape - 1), 0);
-  
-	  const determinantHessian = hessianShapeShape * hessianScaleScale - hessianShapeScale ** 2;
-  
-	  const updateShape = (gradientScale(shape, scale) * hessianShapeScale - gradientShape(shape, scale) * hessianScaleScale) / determinantHessian;
-	  const updateScale = (gradientShape(shape, scale) * hessianScaleScale - gradientScale(shape, scale) * hessianShapeShape) / determinantHessian;
-  
-	  shape -= updateShape;
-	  scale -= updateScale;
-  
-	  // Calcul de la nouvelle log-vraisemblance
-	  previousLikelihood = currentLikelihood;
-	  currentLikelihood = logLikelihood(shape, scale);
-  
-	  iteration++;
-	}
-  
-	return [scale, shape];
+	return [c, alpha];
   }
 
-function echantillonsGamma(shape, scale,tailleEchantillon) {
+
+
+/*function echantillonsGamma(shape, scale,tailleEchantillon) {
 	const echantillon = [];
 	for (let i = 0; i < tailleEchantillon; i++) {
 	  // Génération d'un nombre aléatoire selon la loi gamma
@@ -649,7 +696,19 @@ function echantillonsGamma(shape, scale,tailleEchantillon) {
 	  echantillon.push(gammaValue);
 	}
 	return echantillon;
+  }*/
+
+function echantillonsGamma(shape, scale, tailleEchantillon) {
+  const echantillon = [];
+  for (let i = 0; i < tailleEchantillon; i++) {
+    let sum = 0;
+    for (let j = 0; j < shape; j++) {
+      sum += -Math.log(Math.random());
+    }
+    echantillon.push(sum * scale);
   }
+  return echantillon;
+}
 // Fonction pour calculer la moyenne d'un tableau de données
 function mean(data) {
 	var sum = data.reduce(function(a, b) {
@@ -683,26 +742,6 @@ function mean(data) {
   // Algorithme pour trouver le premier estimateur de vraisemblance maximale
 
   
-  function gamma(x) {
-	if (x === 0) {
-	  return Infinity;
-	} else if (x < 0) {
-	  return gamma(x + 1) / x;
-	} else {
-	  var coef = [
-		76.18009172947146, -86.50532032941677, 24.01409824083091,
-		-1.231739572450155, 0.001208650973866179, -0.000005395239384953
-	  ];
-	  var sum = 1.000000000190015;
-	  var base = x - 1;
-	  for (var i = 0; i < 6; i++) {
-		base++;
-		sum += coef[i] / base;
-	  }
-	  var tmp = base + 5.5;
-	  return Math.sqrt(2 * Math.PI) * Math.pow(tmp, (base + 0.5)) * Math.exp(-tmp) * sum;
-	}
-  }
   
   function psi(x) {
 	if (x === 0) {

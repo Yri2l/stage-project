@@ -123,10 +123,6 @@
           <td>Fonction de r&eacute;partition r&eacute;ciproque:</td>
           <td>Non définie de manière explicite</td>
         </tr>
-        <tr>
-          <td>Simulation :</td>
-          <td>si $U$ suit une loi uniforme sur $[0,1]$, alors $\displaystyle F^{-1}(U,a,b)$ suit une loi Uniforme Continue</td>
-        </tr>
       </tbody>
     </table>
     <div id="chart-container">
@@ -206,10 +202,10 @@
           const data = [];
           const labels = [];
 
-          for (let x = min; x <= max; x += 0.1) {
+          for (let x = min; x <= max; x += 0.01) {
             const density = (x >= a && x <= b) ? 1 / (b - a) : 0;
-            data.push(density.toFixed(2));
-            labels.push(x.toFixed(1));
+            data.push(density.toFixed(3));
+            labels.push(x.toFixed(3));
           }
 
           const ctx = document.getElementById('chart').getContext('2d');

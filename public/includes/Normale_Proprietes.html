@@ -122,10 +122,6 @@
           <td>Fonction de r&eacute;partition r&eacute;ciproque:</td>
           <td>Non définie de manière explicite</td>
         </tr>
-        <tr>
-          <td>Simulation :</td>
-          <td>si $U1$ suit une loi uniforme sur $[-1,1]$, $U2$ suit une loi uniforme sur $[-1,1]$ et $U$ = $U1$^2 + $U2$^2 < 1 alors $\displaystyle F^{-1}(U,\mu,\sigma)$ suit une loi Normale.</td>
-        </tr>
       </tbody>
     </table>
     <div id="chart-container">
@@ -151,22 +147,6 @@
             </td>
             <td class="zoneT">
               <input type="text" id="paramsigma" v-model="paramsigma" />
-            </td>
-          </tr>
-          <tr>
-            <td class="zoneD">
-              <label for="min">Borne inf</label>
-            </td>
-            <td class="zoneT">
-              <input type="number" id="min" v-model="min" />
-            </td>
-          </tr>
-          <tr>
-            <td class="zoneD">
-              <label for="max">Borne sup</label>
-            </td>
-            <td class="zoneT">
-              <input type="number" id="max" v-model="max" />
             </td>
           </tr>
           <tr>
@@ -196,37 +176,42 @@
           }
 
           const mu = parseFloat(this.parammu);
-          const sigmaSquared = parseFloat(this.paramsigma);
-          const min = parseFloat(this.min);
-          const max = parseFloat(this.max);
-          if (isNaN(sigmaSquared) || sigmaSquared <= 0) {
-          alert("Erreur : Le paramètre 'sigma^2' doit être strictement supérieur à 0");
-          return;
-        }
+          const variance = parseFloat(this.paramsigma); // Utiliser le paramètre sigma carré
+          if (isNaN(variance) || variance <= 0) {
+            alert("Erreur : Le paramètre 'sigma^2' doit être strictement supérieur à 0");
+            return;
+          }
+
           const data = [];
           const labels = [];
 
-          for (let x = min; x <= max; x += 0.1) {
-            const exponent = -((x - mu) ** 2) / (2 * sigmaSquared);
-            const density = (1 / (Math.sqrt(2 * Math.PI * sigmaSquared))) * Math.exp(exponent);
-            data.push(density.toFixed(2));
-            labels.push(x.toFixed(1));
+          const numPoints = 100; // Nombre de points pour subdiviser la plage de valeurs
+          const sigma = Math.sqrt(variance); // Calcul de l'écart-type à partir de la variance
+          const min = mu - 4 * sigma; // Nouveau calcul du min
+          const max = mu + 4 * sigma; // Nouveau calcul du max
+          const stepSize = (max - min) / (numPoints - 1); // Calcule l'incrément
+
+          for (let i = 0; i < numPoints; i++) {
+            const x = min + i * stepSize; // Calcule la valeur de x pour chaque point
+            const exponent = -((x - mu) ** 2) / (2 * variance); // Utiliser la variance
+            const density = (1 / (Math.sqrt(2 * Math.PI * variance))) * Math.exp(exponent);
+            data.push({ x: x.toFixed(3), density: density.toFixed(3) });
           }
 
           const ctx = document.getElementById('chart').getContext('2d');
           this.chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: '',
-      data: data,
-      borderColor: 'blue',
-      fill: false, // Retirer le remplissage sous la courbe
-    }],
-  },
-  options: {
-    responsive: true,
+            type: 'line',
+            data: {
+              labels: data.map(item => item.x),
+              datasets: [{
+                label: '',
+                data: data.map(item => item.density),
+                borderColor: 'blue',
+                fill: false, // Retirer le remplissage sous la courbe
+              }],
+            },
+            options: {
+              responsive: true,
     scales: {
       x: {
         title: {
@@ -246,9 +231,8 @@
         display: false,
       },
     },
-  },
-});
-
+            },
+          });
         },
       },
       mounted() {
@@ -257,5 +241,4 @@
     });
   </script>
 </body>
-
 </html>
