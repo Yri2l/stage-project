@@ -107,7 +107,7 @@
           </div>
           
 		  <hr style="border-top: 5px solid  #33acff;">
-          <button type="submit" class="btn btn-primary" @click.prevent="echantillon" @click="updateChart">Submit</button>
+          <button type="submit" class="btn btn-primary" @click.prevent="" @click="updateChart">Submit</button>
         </form>
     </div> 
 	  
@@ -279,6 +279,7 @@
           reader.onload = (event) => {
             const contents = event.target.result;
             this.data_echantillon = contents.split('\n');
+            this.data_echantillon = extractNumbers(this.data_echantillon);
           };
           reader.readAsText(file);
         },

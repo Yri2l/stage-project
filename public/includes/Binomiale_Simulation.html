@@ -205,11 +205,15 @@
                </tr>
              </thead>
              <tbody>
-               <tr>
-                 <td>Estimateur de vraisemblance maximum</td>
-                 <td>{{ stat_desc['moyenne'] }}</td>
-               </tr>
-             </tbody>
+              <tr>
+                <td>Estimateur de vraisemblance maximum n</td>
+                <td>{{estim_n}}</td>
+              </tr>
+              <tr>
+               <td>Estimateur de vraisemblance maximum p</td>
+               <td>{{estim_p}}</td>
+             </tr>
+            </tbody>
            </table>
          </div>
        </div>
@@ -264,10 +268,21 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
-              }
+              },
+              estim_n() {
+          return this.estimationN();
+        },
+        estim_p() {
+          return this.estimationP();
+        },
       },
       methods: {
-        
+        estimationN(){
+          return estimateurBinomiale(this.data_echantillon)[0];
+        },
+        estimationP(){
+          return estimateurBinomiale(this.data_echantillon)[1];
+        },
         updateChart() {
           // Mettez à jour les données du graphique
           this.values = this.getUniqueCount()[0];

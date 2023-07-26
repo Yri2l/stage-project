@@ -254,6 +254,7 @@
           reader.onload = (event) => {
             const contents = event.target.result;
             this.data_echantillon = contents.split('\n');
+            this.data_echantillon = extractNumbers(this.data_echantillon);
           };
           reader.readAsText(file);
         },

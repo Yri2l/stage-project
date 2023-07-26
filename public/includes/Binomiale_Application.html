@@ -197,9 +197,13 @@
           </thead>
           <tbody>
             <tr>
-              <td>Estimateur de vraisemblance maximum</td>
-              <td>{{ stat_desc['moyenne'] }}</td>
+              <td>Estimateur de vraisemblance maximum n</td>
+              <td>{{estim_n}}</td>
             </tr>
+            <tr>
+             <td>Estimateur de vraisemblance maximum p</td>
+             <td>{{estim_p}}</td>
+           </tr>
           </tbody>
         </table>
       </div>
@@ -238,9 +242,21 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
-              }
+              },
+              estim_n() {
+          return this.estimationN();
+        },
+        estim_p() {
+          return this.estimationP();
+        },
       },
       methods: {
+        estimationN(){
+          return estimateurBinomiale(this.data_echantillon)[0];
+        },
+        estimationP(){
+          return estimateurBinomiale(this.data_echantillon)[1];
+        },
         handleFileChange(event) {
           const file = event.target.files[0];
           this.readFile(file);
@@ -250,6 +266,7 @@
           reader.onload = (event) => {
             const contents = event.target.result;
             this.data_echantillon = contents.split('\n');
+            this.data_echantillon = extractNumbers(this.data_echantillon);
           };
           reader.readAsText(file);
         },

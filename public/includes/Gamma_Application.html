@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Statistiques inf&eacute;rentielles</title> 
   
@@ -37,242 +38,217 @@
 <!-- Pour formules maths -->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
   
-  <style type="text/css">
 
- body{
- background-color:#f8f9f9;
- 
- 
- scroll-behavior: auto;
- }
-</style>  
-
-</head>
-<body>
-  
-
-<div id="app">
-
-<div class="container mt-4">
-  <h2>Application de la loi Gamma</h2>
-  <br>
-  <!-- Nav pills -->
-  <ul class="nav nav-pills" role="tablist">
-    <li class="nav-item">
-       <a class="nav-link active" data-bs-toggle="pill" href="#donnees">  Application aux donn&eacute;es </a>
-    </li>
-	
-	<li class="nav-item">
-      <a class="nav-link" data-bs-toggle="pill" href="#tabStats">  Tableau des statistiques descriptives </a>
-    </li>
-	
-	
-	<li class="nav-item">
-      <a class="nav-link" data-bs-toggle="pill" href="#histo"> Histogramme</a>
-    </li>
-	
-	<li class="nav-item">
-      <a class="nav-link" data-bs-toggle="pill" href="#Estimation"> Analyse et Estimation des donn&eacute;es</a>
-    </li>
-	
- 
-  </ul>
-  
-
-  <!-- Tab panes -->
-  
-  <div class="tab-content">
-  
-    <div id="donnees" class="container tab-pane active"><br>
-      <h3>Application aux donn&eacute;es</h3>
-      
-	  <div class="col-md-7 offset-md-1 mt-5">
-       
-      
-        <form accept-charset="UTF-8" action="" method="POST" enctype="multipart/form-data" target="_blank" @submit="handleFormSubmit">
-          
-          
-          
-          <hr style="border-top: 5px solid  #33acff;">
-		  
-          <div class="form-group mt-3">
-            <label class="mr-2">s&eacute;lectionnez votre fichier:&nbsp;&nbsp;&nbsp;</label> 
-            <input type="file" name="file" v-on:change="handleFileChange">
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">barre</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="paramtaille" v-model="nb_barre">
-            </div>
-          </div>
-          
-		  <hr style="border-top: 5px solid  #33acff;">
-          <button type="submit" class="btn btn-primary" @click.prevent="echantillon" @click="updateChart">Submit</button>
-        </form>
-    </div> 
-	  
-  </div>
-  
-    <div id="tabStats" class="container tab-pane fade"><br>
-      <h3>Tableau des statistiques descriptives</h3>
-	  <br>
-	  
-    <table class="table table-bordered table-hover">
-       
-      <thead style="background-color: blue;color: white; font-size: 17px;">
-        <tr>
-          <th scope="col">Statistiques</th>
-          <th scope="col">Formules</th>
-          <th scope="col">Valeurs empiriques</th>
-        </tr>
-      </thead>
-      
-      
-      <tbody>
-        <tr>
-          <td>nombres d'observations</td>
-          <td class="text-center">n</td>
-          <td class="text-center">{{stat_desc["nombre d'observation"]}}<td>
-        </tr>
-      
-      <tr>
-          <td>minimum</td>
-          <td class="text-center">$$\displaystyle min(x_{1}, \ldots , x_{n}) $$</td>
-          <td class="text-center">{{stat_desc["minimum"]}}</td>
-        </tr>
-      
-      <tr>
-          <td>maximum</td>
-          <td class="text-center">$$\displaystyle max(x_{1}, \ldots , x_{n}) $$</td>
-          <td class="text-center">{{stat_desc["maximum"]}}</td>
-        </tr>
-      
-        <tr>
-          <td>moyenne empirique</td>
-          <td class="text-center">$$\displaystyle m_{1}=\overline{x}_{n}=  \frac{1}{n} \sum\limits_{i=1}^{n} x_{i}$$</td>
-          <td class="text-center">{{stat_desc["moyenne"]}}</td>
-        </tr>
-      
-      
-         <tr>
-          <td>variance empirique</td>
-          <td class="text-center">$$\displaystyle  \mu_{2}=  \frac{1}{n} \sum\limits_{i=1}^{n} \big(x_{i}-\overline{x}_{n}\big)^{2}$$</td>
-          <td class="text-center">{{stat_desc["variance"]}}</td>
-        </tr>
-      
-      <tr>
-          <td>Asym&eacute;trie (skewness)</td>
-          <td class="text-center"> $$\displaystyle  \gamma_{1}=\frac{\mu_{3}}{\mu_{2}^{3/2}}$$</td>
-          <td class="text-center">{{stat_desc["skewness"]}}</td>
-        </tr>
-      
-      <tr>
-          <td> Aplatissement (kurtosis)</td>
-          <td class="text-center"> $$\displaystyle  \gamma_{2}=\frac{\mu_{4}}{\mu_{2}^{2}}-3$$</td>
-          <td class="text-center">{{stat_desc["kurtosis"]}}</td>
-        </tr>
-      
-      
-      
-      </tbody>
-    </table>
-
-  </div>
-	
-	
-    <!-- Histogramme 	 -->
-    <div id="histo" class="container tab-pane fade"><br>
-      <h3>Histogramme Des donn&eacute;es</h3>
-      <div class="chartCard">
-        <div class="chartBox">
-          <canvas id="myChart"></canvas>
-        </div>
-      </div>
-    </div>
-	
-	<div id="Estimation" class="container tab-pane fade"><br>
-    <h3 class="fontsofia"> Analyse et Estimation des donn&eacute;es</h3>
-    <div class="row">
-      <div class="col-md-6">
-        <table class="table table-bordered table-hover">
-          <thead style="background-color: blue;color: white; font-size: 17px;">
-            <tr>
-              <th scope="col">Estimateurs</th>
-              <th scope="col">Valeurs</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Estimateur de vraisemblance maximum a</td>
-              <td>{{evm_gamma_1}}</td>
-            </tr>
-            <tr>
-             <td>Estimateur de vraisemblance maximum b</td>
-             <td>{{evm_gamma_2}}</td>
-           </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-	</div>
-  
-  </div>
-  
-  </div>
-  <script>
-    new Vue({
-      el: '#app',
-        data(){
-                return {nb_echantillon : 100,
-                  param1 : 0.5,
-                  param2 : 0,
-                  nb_observation : 0,
-                  minimum : 0,
-                  maximum : 0,
-                  moyenne_empirique : 0,
-                  variance_empirique : 0,
-                  asymetrie : 0,
-                  applatissement : 0,
-                  data_echantillon : [],
-                  values: [],
-                  effective : [],
-                  chart: null,
-                  nb_barre : 5
-            }
-            },
-      mounted() {
-        this.renderChart();
-      },
-      computed: {
-              stat_desc()
-              {
-                return this.Stats_descriptives();
-              },
-        evm_gamma_1(){
-          return this.estimateur_gamma_1();
-        },
-        evm_gamma_2(){
-          return this.estimateur_gamma_2();
+    <style type="text/css">
+        body {
+            background-color: #f8f9f9;
+            scroll-behavior: auto;
         }
-      },
-      methods: {
-        handleFileChange(event) {
-          const file = event.target.files[0];
-          this.readFile(file);
-        },
-        readFile(file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const contents = event.target.result;
-            this.data_echantillon = contents.split('\n');
-          };
-          reader.readAsText(file);
-        },
-        handleFormSubmit(event) {
-          event.preventDefault();
-          // Faites quelque chose avec les données soumises
-        },
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container mt-4">
+        <h2>Application de la loi Gamma</h2>
+        <br>
+        <!-- Nav pills -->
+        <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="pill" href="#donnees"> Application aux données </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="pill" href="#tabStats"> Tableau des statistiques descriptives </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="pill" href="#histo"> Histogramme</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="pill" href="#Estimation"> Analyse et Estimation des données</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div id="donnees" class="container tab-pane active"><br>
+                <h3>Application aux données</h3>
+
+                <div class="col-md-7 offset-md-1 mt-5">
+                    <form accept-charset="UTF-8" action="" method="POST" enctype="multipart/form-data"
+                        target="_blank" @submit="handleFormSubmit">
+                        <hr style="border-top: 5px solid  #33acff;">
+                        <div class="form-group mt-3">
+                            <label class="mr-2">sélectionnez votre fichier:&nbsp;&nbsp;&nbsp;</label>
+                            <input type="file" name="file" v-on:change="handleFileChange">
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">barre</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="paramtaille" v-model="nb_barre">
+                            </div>
+                        </div>
+                        <hr style="border-top: 5px solid  #33acff;">
+                        <button type="submit" class="btn btn-primary" @click.prevent=""
+                            @click="updateChart">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="tabStats" class="container tab-pane fade"><br>
+                <h3>Tableau des statistiques descriptives</h3><br>
+                <table class="table table-bordered table-hover">
+                    <thead style="background-color: blue;color: white; font-size: 17px;">
+                        <tr>
+                            <th scope="col">Statistiques</th>
+                            <th scope="col">Formules</th>
+                            <th scope="col">Valeurs empiriques</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>nombres d'observations</td>
+                            <td class="text-center">n</td>
+                            <td class="text-center">{{stat_desc["nombre d'observation"]}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>minimum</td>
+                            <td class="text-center">$$\displaystyle min(x_{1}, \ldots , x_{n}) $$</td>
+                            <td class="text-center">{{stat_desc["minimum"]}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>maximum</td>
+                            <td class="text-center">$$\displaystyle max(x_{1}, \ldots , x_{n}) $$</td>
+                            <td class="text-center">{{stat_desc["maximum"]}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>moyenne empirique</td>
+                            <td class="text-center">$$\displaystyle m_{1}=\overline{x}_{n}= \frac{1}{n}
+                                \sum\limits_{i=1}^{n} x_{i}$$</td>
+                            <td class="text-center">{{stat_desc["moyenne"]}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>variance empirique</td>
+                            <td class="text-center">$$\displaystyle \mu_{2}= \frac{1}{n}
+                                \sum\limits_{i=1}^{n} \big(x_{i}-\overline{x}_{n}\big)^{2}$$</td>
+                            <td class="text-center">{{stat_desc["variance"]}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Asymétrie (skewness)</td>
+                            <td class="text-center"> $$\displaystyle \gamma_{1}=\frac{\mu_{3}}{\mu_{2}^{3/2}}$$</td>
+                            <td class="text-center">{{stat_desc["skewness"]}}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Aplatissement (kurtosis)</td>
+                            <td class="text-center"> $$\displaystyle \gamma_{2}=\frac{\mu_{4}}{\mu_{2}^{2}}-3$$</td>
+                            <td class="text-center">{{stat_desc["kurtosis"]}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Histogramme -->
+            <div id="histo" class="container tab-pane fade"><br>
+                <h3>Histogramme Des données</h3>
+                <div class="chartCard">
+                    <div class="chartBox">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="Estimation" class="container tab-pane fade"><br>
+                <h3 class="fontsofia"> Analyse et Estimation des données</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-bordered table-hover">
+                            <thead style="background-color: blue;color: white; font-size: 17px;">
+                                <tr>
+                                    <th scope="col">Estimateurs</th>
+                                    <th scope="col">Valeurs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Estimateur de vraisemblance maximum a</td>
+                                    <td>{{estim1}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Estimateur de vraisemblance maximum b</td>
+                                    <td>{{estim2}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    nb_echantillon: 100,
+                    param1: 0.5,
+                    param2: 0,
+                    nb_observation: 0,
+                    minimum: 0,
+                    maximum: 0,
+                    moyenne_empirique: 0,
+                    variance_empirique: 0,
+                    asymetrie: 0,
+                    applatissement: 0,
+                    data_echantillon: [],
+                    values: [],
+                    effective: [],
+                    chart: null,
+                    nb_barre: 5,
+                    estim1 : 0,
+                    estim2 : 0
+                }
+            },
+            mounted() {
+                this.renderChart();
+            },
+            computed: {
+                stat_desc() {
+                    return this.Stats_descriptives();
+                },
+                evm_gamma_1() {
+                    return this.estimateur_gamma_1();
+                },
+                evm_gamma_2() {
+                    return this.estimateur_gamma_2();
+                }
+            },
+            methods: {
+                handleFileChange(event) {
+                    const file = event.target.files[0];
+                    this.readFile(file);
+                },
+                readFile(file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const contents = event.target.result;
+                        this.data_echantillon = contents.split('\n');
+                        this.data_echantillon = extractNumbers(this.data_echantillon);
+                    };
+                    reader.readAsText(file);
+                    
+                },
+                handleFormSubmit(event) {
+                    event.preventDefault();
+                    // Faites quelque chose avec les données soumises
+                },
         estimateur_gamma_1(){
           return estimateur_gamma_1(this.data_echantillon);
         },
@@ -280,83 +256,76 @@
           return estimateur_gamma_2(this.data_echantillon);
         },
         updateChart() {
-          // Mettez à jour les données du graphique
-          this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
+                    // Mettez à jour les données du graphique
+                    this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
 
-          this.effective = this.histogram_Continue()[1];
+                    this.effective = this.histogram_Continue()[1];
 
-          // Mettez à jour les données du graphique existant
-          this.chart.data.labels = this.values;
-          this.chart.data.datasets[0].data = this.effective;
+                    // Mettez à jour les données du graphique existant
+                    this.chart.data.labels = this.values;
+                    this.chart.data.datasets[0].data = this.effective;
 
-          // Mettez à jour le graphique
-          this.chart.update();
-        },
-        couleurrgba() {
-        let r = Math.floor(20 + Math.random() * 230);
-        let g = Math.floor(20 + Math.random() * 230);
-        let b = Math.floor(20 + Math.random() * 230);
-        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
-        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-        return color;
-      },
-      rgba_vecteur(n) {
-        fond_couleur = [];
-        for (let i = 0; i < n; i++) {
-          fond_couleur.push(this.couleurrgba());
-        }
-        return fond_couleur;
-      },
-        histogram_Continue()
-        {
-          return histogram_Continue(this.data_echantillon, this.nb_barre);
-        },
-        Stats_descriptives()
-              {
-                
-                return Stats_descriptives(this.data_echantillon);
-              },
-              renderChart() {
-          const ctx = document.getElementById('myChart').getContext('2d');
-          const colors = this.rgba_vecteur(this.nb_barre);
-          this.chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: this.values,
-              datasets: [{
-                label: ' ',
-                data: this.effective,
-                backgroundColor: colors,
-                borderWidth: 1,
-              }]
-            },
-            options: {
-              
-	responsive: true,
-    maintainAspectRatio: false,
-	
-	categoryPercentage: 1.0, 
-    barPercentage: 1.0,  
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
-  
-  plugins: {
-		legend: {
-            display: false
-         },
-		 }
-},
-
-          });
-        }
-      }
-    });
-   
+                    // Mettez à jour le graphique
+                    this.chart.update();
+                },
+                couleurrgba() {
+                    let r = Math.floor(20 + Math.random() * 230);
+                    let g = Math.floor(20 + Math.random() * 230);
+                    let b = Math.floor(20 + Math.random() * 230);
+                    let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+                    let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+                    return color;
+                },
+                rgba_vecteur(n) {
+                    fond_couleur = [];
+                    for (let i = 0; i < n; i++) {
+                        fond_couleur.push(this.couleurrgba());
+                    }
+                    return fond_couleur;
+                },
+                histogram_Continue() {
+                    return histogram_Continue(this.data_echantillon, this.nb_barre);
+                },
+                Stats_descriptives() {
+                  this.estim1 = estimateur_gamma_1(this.data_echantillon);
+                    this.estim2 = estimateur_gamma_2(this.data_echantillon);
+                    return Stats_descriptives(this.data_echantillon);
+                },
+                renderChart() {
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const colors = this.rgba_vecteur(this.nb_barre);
+                    this.chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: this.values,
+                            datasets: [{
+                                label: ' ',
+                                data: this.effective,
+                                backgroundColor: colors,
+                                borderWidth: 1,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.0,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                },
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                            }
+                        },
+                    });
+                }
+            }
+        });
     </script>
-</div>
 </body>
 
 </html>

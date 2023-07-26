@@ -219,6 +219,17 @@ function HistoDiscret(data){
 		
 	
 	}
+function extractNumbers(arr) {
+  const result = [];
+  for (const item of arr) {
+    const numStr = item.replace(/[^\d.-]/g, ''); // Utilisation d'une expression régulière pour supprimer tout ce qui n'est pas un chiffre, un point ou un signe négatif
+    if (numStr !== '' && !isNaN(numStr)) {
+      result.push(Number(numStr));
+    }
+  }
+  return result;
+}
+
 
 function trierAbscissesEtEffectifs(abscisses, effectifs) {
 	// Créer une copie des listes d'abscisses et d'effectifs
@@ -597,6 +608,31 @@ function echantillonWeibull(lambda, k, taille) {
   }*/
   
   // Fonction pour calculer la fonction gamma (utilisée dans estimateurWeibull)
+
+
+function moyenneEmpirique(echantillon) {
+  const somme = echantillon.reduce((acc, val) => acc + val, 0);
+  return somme / echantillon.length;
+}
+
+function varianceEmpirique(echantillon) {
+  const moyenne = moyenneEmpirique(echantillon);
+  const differencesCarrees = echantillon.map(val => (val - moyenne) ** 2);
+  const sommeDesDifferencesCarrees = differencesCarrees.reduce((acc, val) => acc + val, 0);
+  return sommeDesDifferencesCarrees / echantillon.length;
+}
+
+function estimateurBinomiale(echantillon) {
+  const moyenne = moyenneEmpirique(echantillon);
+  const variance = varianceEmpirique(echantillon);
+
+  // Résoudre les équations pour n et p
+  const p = 1 - (variance / moyenne);
+  const n = moyenne / p;
+
+  return [n, p];
+}
+
   function gamma(x) {
 	const sqrtTwoPi = Math.sqrt(2 * Math.PI);
 	const g = 7;
@@ -653,39 +689,77 @@ function echantillonWeibull(lambda, k, taille) {
   
 	return psi;
   }
-  // Fonction d'estimation des paramètres de la distribution Weibull par la méthode de Newton-Raphson
-  function estimateurWeibull(echantillon, maxIterations = 1000, tolerance = 1e-6) {
-	const n = echantillon.length;
-	if(n==0)
-		return [0,0];
-	// Calcul des moments empiriques
-	const mean = echantillon.reduce((sum, x) => sum + x, 0) / n;
-	const variance = echantillon.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / n;
-	const stdDeviation = Math.sqrt(variance);
+function mean(array) {
+  return array.reduce((sum, value) => sum + value, 0) / array.length;
+}
+
+function equation(c, varianceEmpirique, moyenneEmpirique, X_i) {
+	const term1 = Math.pow(gamma(1 + 2 / c) - Math.pow(gamma(1 + 1 / c), 2), 2);
+	const term2 = varianceEmpirique - term1;
+	const term3 = moyenneEmpirique * gamma(1 + 1 / c) - X_i * gamma(1 + 1 / c);
   
-	// Initialisation du paramètre c avec une valeur arbitraire
-	let c = 1;
+	return term2 + term3;
+  }
   
-	// Itération de la méthode de Newton-Raphson pour trouver la valeur de c
+  function derivativeEquation(c, X_i) {
+	const term1 = (1 + 2 / c) * gamma(1 + 2 / c) - 2 * (1 + 1 / c) * gamma(1 + 1 / c) * (1 / (c * c));
+	const term2 = X_i * gamma(1 + 1 / c) / (c * c);
+  
+	return term1 - term2;
+  }
+  
+  function findC(varianceEmpirique, moyenneEmpirique, X_i, c0) {
+	let c = c0; // Valeur initiale pour c
+	const maxIterations = 100;
+	const tolerance = 1e-6;
+  
 	for (let i = 0; i < maxIterations; i++) {
-	  const prevC = c;
-	  const term1 = gamma(1 + 2 / c) - Math.pow( gamma(1 + 1 / c), 2);
-	  const term2 = stdDeviation / mean * gamma(1 + 1 / c);
-	  c = prevC - term1 / (2 * prevC * term2);
+	  const equationValue = equation(c, varianceEmpirique, moyenneEmpirique, X_i);
+	  const derivativeValue = derivativeEquation(c, X_i);
   
-	  // Vérification de la convergence
-	  if (Math.abs(c - prevC) < tolerance) {
+	  const cNext = c - equationValue / derivativeValue;
+  
+	  if (Math.abs(cNext - c) < tolerance) {
+		c = cNext;
 		break;
 	  }
+  
+	  c = cNext;
 	}
   
-	// Calcul de alpha à partir de c et des moments empiriques
-	const alpha = mean /  gamma(1 + 1 / c);
-  
-	return [c, alpha];
+	return c;
   }
+function varianceEmpiriquef(data) {
+  const n = data.length;
+  const moyenneEmpirique = data.reduce((sum, value) => sum + value, 0) / n;
+  return data.reduce((sum, value) => sum + (value - moyenneEmpirique) ** 2, 0) / n;
+}
 
+function estimateurWeibull(data) {
+	if(data.length !== 0) {
+	const pi = 0.16731;
+  const pk = 0.97366;
 
+  data.sort((a, b) => a - b);
+  const n = data.length;
+  const X_i = data[Math.floor(pi * n)];
+  const X_k = data[Math.floor(pk * n)];
+  
+  
+  
+	// Estimation initiale du paramètre c à partir de c0
+	const c0 = Math.log(Math.log(1 - pk) / Math.log(1 - pi)) / Math.log(X_k / X_i);
+	const varianceEmpirique = varianceEmpiriquef(data);
+	const moyenneEmpirique = data.reduce((sum, value) => sum + value, 0) / n;
+	// Trouver la valeur de c
+	const c = findC(varianceEmpirique, moyenneEmpirique, X_i, c0);
+  
+	// Trouver la valeur de alpha
+	const alpha = moyenneEmpirique / gamma(1 + 1 / c);
+  
+	return [alpha, c]; }
+	return [0, 0];
+  }
 
 /*function echantillonsGamma(shape, scale,tailleEchantillon) {
 	const echantillon = [];
