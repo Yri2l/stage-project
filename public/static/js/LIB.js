@@ -735,30 +735,78 @@ function varianceEmpiriquef(data) {
   return data.reduce((sum, value) => sum + (value - moyenneEmpirique) ** 2, 0) / n;
 }
 
-function estimateurWeibull(data) {
-	if(data.length !== 0) {
-	const pi = 0.16731;
-  const pk = 0.97366;
+function linearRegressionCoefficients(xData, yData) {
+	if (xData.length !== yData.length) {
+	  throw new Error("Les tableaux xData et yData doivent avoir la même longueur.");
+	}
+  
+	const n = xData.length;
+  
+	// Calcul des moyennes de x et y
+	const meanX = xData.reduce((acc, val) => acc + val, 0) / n;
+	const meanY = yData.reduce((acc, val) => acc + val, 0) / n;
+  
+	// Calcul des termes nécessaires pour les coefficients
+	let sumXY = 0;
+	let sumXSquare = 0;
+  
+	for (let i = 0; i < n; i++) {
+	  sumXY += xData[i] * yData[i];
+	  sumXSquare += xData[i] * xData[i];
+	}
+  
+	// Calcul des coefficients alpha (intercept) et beta (pente)
+	const beta = (n * sumXY - n * meanX * meanY) / (n * sumXSquare - n * meanX * meanX);
+	const alpha = meanY - beta * meanX;
+  
+	return [alpha, beta];
+  }
+  
 
-  data.sort((a, b) => a - b);
-  const n = data.length;
-  const X_i = data[Math.floor(pi * n)];
-  const X_k = data[Math.floor(pk * n)];
+function estimateurWeibull(echantillon) {
+	// Calcul de la taille de l'échantillon
+	const n = echantillon.length;
   
+	// Trier l'échantillon en ordre croissant
+	echantillon.sort((a, b) => a - b);
   
+	// Premier tableau: ln(xi)
+	const tableau1 = echantillon.map(x => Math.log(x));
+	// Deuxième tableau: yi = ln(-ln(1-zi))
+	const tableau2 = [];
+	for (let i = 1; i <= n; i++) {
+	  const zi = (i - 0.3) /( n + 0.4);
+	  console.log(zi);
+	  const yi = Math.log(-Math.log(1 - zi));
+	  tableau2.push(yi);
+	}
+	// Calcul de la moyenne empirique de hn(x) et y
+	const moyenneHnX = moyenneEmpirique(tableau1);
+	const moyenneY = moyenneEmpirique(tableau2);
   
-	// Estimation initiale du paramètre c à partir de c0
-	const c0 = Math.log(Math.log(1 - pk) / Math.log(1 - pi)) / Math.log(X_k / X_i);
-	const varianceEmpirique = varianceEmpiriquef(data);
-	const moyenneEmpirique = data.reduce((sum, value) => sum + value, 0) / n;
-	// Trouver la valeur de c
-	const c = findC(varianceEmpirique, moyenneEmpirique, X_i, c0);
+	// Troisième tableau: ln(xi) - moyenne empirique de hn(x)
+	const tableau3 = tableau1.map(x => x - moyenneHnX);
+	// Quatrième tableau: yi - moyenne empirique de y
+	const tableau4 = tableau2.map(y => y - moyenneY);
+	// Calcul de Beta
+	let sommeProduits = 0;
+	let sommeCarres = 0;
   
-	// Trouver la valeur de alpha
-	const alpha = moyenneEmpirique / gamma(1 + 1 / c);
+	for (let i = 0; i < n; i++) {
+	  const produit = (tableau3[i]) * tableau4[i];
+	  const carre = Math.pow(tableau3[i], 2);
+	  sommeProduits += produit;
+	  sommeCarres += carre;
+	}
+	
+	const beta = sommeProduits / sommeCarres;
   
-	return [alpha, c]; }
-	return [0, 0];
+	// Calcul de alpha
+	moyenneX = moyenneEmpirique(echantillon);
+	const alpha = moyenneX/gamma(1+(1/beta));
+	
+
+	return [alpha, beta];
   }
 
 /*function echantillonsGamma(shape, scale,tailleEchantillon) {
