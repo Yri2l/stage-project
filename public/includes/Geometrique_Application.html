@@ -211,130 +211,131 @@
   </div>
   
   </div>
-  <script>
-    new Vue({
-      el: '#app',
-        data(){
-                return {nb_echantillon : 100,
-                  param1 : 0.5,
-                  param2 : 0,
-                  nb_observation : 0,
-                  minimum : 0,
-                  maximum : 0,
-                  moyenne_empirique : 0,
-                  variance_empirique : 0,
-                  asymetrie : 0,
-                  applatissement : 0,
-                  data_echantillon : [],
-                  values: [],
-                  effective : [],
-                  chart: null,
-            }
-            },
-      mounted() {
-        this.renderChart();
-      },
-      computed: {
-
-              stat_desc()
-              {
-                return this.Stats_descriptives();
-              }
-      },
-      methods: {
-        handleFileChange(event) {
-          const file = event.target.files[0];
-          this.readFile(file);
-        },
-        readFile(file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const contents = event.target.result;
-            this.data_echantillon = contents.split('\n');
-            this.data_echantillon = extractNumbers(this.data_echantillon);
-          };
-          reader.readAsText(file);
-        },
-        handleFormSubmit(event) {
-          event.preventDefault();
-          // Faites quelque chose avec les données soumises
-        },
-        updateChart() {
-          // Mettez à jour les données du graphique
-
-          this.values = this.getUniqueCount()[0];
-          this.effective = this.getUniqueCount()[1];
-
-          // Mettez à jour les données du graphique existant
-          this.chart.data.labels = this.values;
-          this.chart.data.datasets[0].data = this.effective;
-
-          // Mettez à jour le graphique
-          this.chart.update();
-        },
-        couleurrgba() {
-        let r = Math.floor(20 + Math.random() * 230);
-        let g = Math.floor(20 + Math.random() * 230);
-        let b = Math.floor(20 + Math.random() * 230);
-        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
-        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-        return color;
-      },
-      rgba_vecteur(n) {
-        fond_couleur = [];
-        for (let i = 0; i < n; i++) {
-          fond_couleur.push(this.couleurrgba());
-        }
-        return fond_couleur;
-      },
-        getUniqueCount()
-        {
-          return getUniqueCount(this.data_echantillon);
-        },
-        Stats_descriptives()
-              {
-                
-                return Stats_descriptives(this.data_echantillon);
-              },
-              renderChart() {
-  const ctx = document.getElementById('myChart').getContext('2d');
-  const colors = this.rgba_vecteur(100);
-
-  this.chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: this.values,
-      datasets: [{
-        label: ' ',
-        data: this.effective,
-        backgroundColor: colors,
-        borderWidth: 1,
-        barThickness: 'flex',
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      categoryPercentage: 1.0,
-      barPercentage: 0.8,
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-      plugins: {
-        legend: {
-          display: false,
-        },
-      },
-    },
-  });
-}
-      }
-    });
-   
-    </script>
+  
 </div>
+<script>
+  new Vue({
+    el: '#app',
+      data(){
+              return {nb_echantillon : 100,
+                param1 : 0.5,
+                param2 : 0,
+                nb_observation : 0,
+                minimum : 0,
+                maximum : 0,
+                moyenne_empirique : 0,
+                variance_empirique : 0,
+                asymetrie : 0,
+                applatissement : 0,
+                data_echantillon : [],
+                values: [],
+                effective : [],
+                chart: null,
+          }
+          },
+    mounted() {
+      this.renderChart();
+    },
+    computed: {
+
+            stat_desc()
+            {
+              return this.Stats_descriptives();
+            }
+    },
+    methods: {
+      handleFileChange(event) {
+        const file = event.target.files[0];
+        this.readFile(file);
+      },
+      readFile(file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const contents = event.target.result;
+          this.data_echantillon = contents.split('\n');
+          this.data_echantillon = extractNumbers(this.data_echantillon);
+        };
+        reader.readAsText(file);
+      },
+      handleFormSubmit(event) {
+        event.preventDefault();
+        // Faites quelque chose avec les données soumises
+      },
+      updateChart() {
+        // Mettez à jour les données du graphique
+
+        this.values = this.getUniqueCount()[0];
+        this.effective = this.getUniqueCount()[1];
+
+        // Mettez à jour les données du graphique existant
+        this.chart.data.labels = this.values;
+        this.chart.data.datasets[0].data = this.effective;
+
+        // Mettez à jour le graphique
+        this.chart.update();
+      },
+      couleurrgba() {
+      let r = Math.floor(20 + Math.random() * 230);
+      let g = Math.floor(20 + Math.random() * 230);
+      let b = Math.floor(20 + Math.random() * 230);
+      let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+      let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+      return color;
+    },
+    rgba_vecteur(n) {
+      fond_couleur = [];
+      for (let i = 0; i < n; i++) {
+        fond_couleur.push(this.couleurrgba());
+      }
+      return fond_couleur;
+    },
+      getUniqueCount()
+      {
+        return getUniqueCount(this.data_echantillon);
+      },
+      Stats_descriptives()
+            {
+              
+              return Stats_descriptives(this.data_echantillon);
+            },
+            renderChart() {
+const ctx = document.getElementById('myChart').getContext('2d');
+const colors = this.rgba_vecteur(100);
+
+this.chart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: this.values,
+    datasets: [{
+      label: ' ',
+      data: this.effective,
+      backgroundColor: colors,
+      borderWidth: 1,
+      barThickness: 'flex',
+    }],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    categoryPercentage: 1.0,
+    barPercentage: 0.8,
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  },
+});
+}
+    }
+  });
+ 
+  </script>
 </body>
 
 </html>

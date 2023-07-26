@@ -222,149 +222,157 @@
   </div>
   
   </div>
-  <script>
-    new Vue({
-      el: '#app',
-        data(){
-                return {nb_echantillon : 100,
-                  param1 : 0.5,
-                  param2 : 0,
-                  nb_observation : 0,
-                  minimum : 0,
-                  maximum : 0,
-                  moyenne_empirique : 0,
-                  variance_empirique : 0,
-                  asymetrie : 0,
-                  applatissement : 0,
-                  data_echantillon : [],
-                  values: [],
-                  effective : [],
-                  chart: null,
-                  nb_barre : 5
-            }
-            },
-      mounted() {
-        this.renderChart();
-      },
-      computed: {
-
-              stat_desc()
-              {
-                return this.Stats_descriptives();
-              },
-        estim_a() {
-          return this.estimationA();
-        },
-        estim_b() {
-          return this.estimationB();
-        },
-      },
-      methods: {
-        handleFileChange(event) {
-          const file = event.target.files[0];
-          this.readFile(file);
-        },
-        estimationA() {
-          //const sum = this.data_echantillon.reduce((acc, val) => acc + val, 0);
-          //return sum / this.data_echantillon.length;
-          return estimateurWeibull(this.data_echantillon)[0];
-        },
-        estimationB() {
-          //const sumSquaredDiff = this.data_echantillon.reduce((acc, val) => acc + Math.pow(val - this.estimation_mu, 2), 0);
-          //return sumSquaredDiff / this.data_echantillon.length;
-          return estimateurWeibull(this.data_echantillon)[1];
-        },
-        readFile(file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const contents = event.target.result;
-            this.data_echantillon = contents.split('\n');
-            this.data_echantillon = extractNumbers(this.data_echantillon);
-          };
-          reader.readAsText(file);
-        },
-        handleFormSubmit(event) {
-          event.preventDefault();
-          // Faites quelque chose avec les données soumises
-        },
-        updateChart() {
-          // Mettez à jour les données du graphique
-          this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
-
-          this.effective = this.histogram_Continue()[1];
-
-          // Mettez à jour les données du graphique existant
-          this.chart.data.labels = this.values;
-          this.chart.data.datasets[0].data = this.effective;
-
-          // Mettez à jour le graphique
-          this.chart.update();
-        },
-        couleurrgba() {
-        let r = Math.floor(20 + Math.random() * 230);
-        let g = Math.floor(20 + Math.random() * 230);
-        let b = Math.floor(20 + Math.random() * 230);
-        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
-        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-        return color;
-      },
-      rgba_vecteur(n) {
-        fond_couleur = [];
-        for (let i = 0; i < n; i++) {
-          fond_couleur.push(this.couleurrgba());
-        }
-        return fond_couleur;
-      },
-        histogram_Continue()
-        {
-          return histogram_Continue(this.data_echantillon, this.nb_barre);
-        },
-        Stats_descriptives()
-              {
-                
-                return Stats_descriptives(this.data_echantillon);
-              },
-              renderChart() {
-          const ctx = document.getElementById('myChart').getContext('2d');
-          const colors = this.rgba_vecteur(this.nb_barre);
-          this.chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: this.values,
-              datasets: [{
-                label: ' ',
-                data: this.effective,
-                backgroundColor: colors,
-                borderWidth: 1,
-              }]
-            },
-            options: {
-              
-  responsive: true,
-    maintainAspectRatio: false,
   
-  categoryPercentage: 1.0, 
-    barPercentage: 1.0,  
-  scales: {
-    y: {
-      beginAtZero: true,
+</div>
+
+<script>
+  new Vue({
+    el: '#app',
+      data(){
+              return {nb_echantillon : 0,
+                param1 : 0.5,
+                param2 : 0,
+                nb_observation : 0,
+                minimum : 0,
+                maximum : 0,
+                moyenne_empirique : 0,
+                variance_empirique : 0,
+                asymetrie : 0,
+                applatissement : 0,
+                data_echantillon : [],
+                values: [],
+                effective : [],
+                chart: null,
+                nb_barre : 5
+          }
+          },
+    mounted() {
+      this.renderChart();
     },
+    computed: {
+
+            stat_desc()
+            {
+              return this.Stats_descriptives();
+            },
+      estim_a() {
+        return this.estimationA();
+      },
+      estim_b() {
+        return this.estimationB();
+      },
+    },
+    methods: {
+      handleFileChange(event) {
+        const file = event.target.files[0];
+        this.readFile(file);
+      },
+      estimationA() {
+        //const sum = this.data_echantillon.reduce((acc, val) => acc + val, 0);
+        //return sum / this.data_echantillon.length;
+        if (this.data_echantillon.length === 0) {
+    return 0;
+  }
+        return estimateurWeibull(this.data_echantillon)[0];
+      },
+      estimationB() {
+        //const sumSquaredDiff = this.data_echantillon.reduce((acc, val) => acc + Math.pow(val - this.estimation_mu, 2), 0);
+        //return sumSquaredDiff / this.data_echantillon.length;
+        if (this.data_echantillon.length === 0) {
+    return 0;
+  }
+        return estimateurWeibull(this.data_echantillon)[1];
+      },
+      readFile(file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const contents = event.target.result;
+          this.data_echantillon = contents.split('\n');
+          this.data_echantillon = extractNumbers(this.data_echantillon);
+        };
+        reader.readAsText(file);
+      },
+      handleFormSubmit(event) {
+        event.preventDefault();
+        // Faites quelque chose avec les données soumises
+      },
+      updateChart() {
+        // Mettez à jour les données du graphique
+        this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
+
+        this.effective = this.histogram_Continue()[1];
+
+        // Mettez à jour les données du graphique existant
+        this.chart.data.labels = this.values;
+        this.chart.data.datasets[0].data = this.effective;
+
+        // Mettez à jour le graphique
+        this.chart.update();
+      },
+      couleurrgba() {
+      let r = Math.floor(20 + Math.random() * 230);
+      let g = Math.floor(20 + Math.random() * 230);
+      let b = Math.floor(20 + Math.random() * 230);
+      let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+      let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+      return color;
+    },
+    rgba_vecteur(n) {
+      fond_couleur = [];
+      for (let i = 0; i < n; i++) {
+        fond_couleur.push(this.couleurrgba());
+      }
+      return fond_couleur;
+    },
+      histogram_Continue()
+      {
+        return histogram_Continue(this.data_echantillon, this.nb_barre);
+      },
+      Stats_descriptives()
+            {
+              
+              return Stats_descriptives(this.data_echantillon);
+            },
+            renderChart() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const colors = this.rgba_vecteur(this.nb_barre);
+        this.chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: this.values,
+            datasets: [{
+              label: ' ',
+              data: this.effective,
+              backgroundColor: colors,
+              borderWidth: 1,
+            }]
+          },
+          options: {
+            
+responsive: true,
+  maintainAspectRatio: false,
+
+categoryPercentage: 1.0, 
+  barPercentage: 1.0,  
+scales: {
+  y: {
+    beginAtZero: true,
   },
-  
-  plugins: {
-    legend: {
-            display: false
-         },
-     }
 },
 
-          });
-        }
+plugins: {
+  legend: {
+          display: false
+       },
+   }
+},
+
+        });
       }
-    });
-   
-    </script>
-</div>
+    }
+  });
+ 
+  </script>
 </body>
 
 </html>

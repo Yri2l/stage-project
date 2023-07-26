@@ -657,78 +657,10 @@ function estimateurBinomiale(echantillon) {
 	return sqrtTwoPi * Math.pow(t, x + 0.5) * Math.exp(-t) * a;
   }
   
-  
-  function digamma(x) {
-	// Coefficients pour la série de Stieltjes
-	const coefficients = [
-	  1.0,
-	  1 / 12.0,
-	  -1 / 120.0,
-	  1 / 252.0,
-	  -1 / 240.0,
-	  1 / 132.0,
-	  -691 / 32760.0,
-	  1 / 12.0,
-	  -3617 / 8160.0
-	];
-  
-	if (x <= 0) {
-	  // La fonction digamma n'est pas définie pour les nombres entiers négatifs ou nuls
-	  return NaN;
-	}
-  
-	// Initialisation de la valeur de la fonction digamma
-	let psi = -0.5772156649015328606065121; // Valeur de digamma(1) (constante d'Euler)
-  
-	// Calcul de la série de Stieltjes pour améliorer la précision
-	let term = 1 / x;
-	for (let k = 0; k < coefficients.length; k++) {
-	  term = coefficients[k] * (x ** (2 * k + 1));
-	  psi += term;
-	}
-  
-	return psi;
-  }
 function mean(array) {
   return array.reduce((sum, value) => sum + value, 0) / array.length;
 }
 
-function equation(c, varianceEmpirique, moyenneEmpirique, X_i) {
-	const term1 = Math.pow(gamma(1 + 2 / c) - Math.pow(gamma(1 + 1 / c), 2), 2);
-	const term2 = varianceEmpirique - term1;
-	const term3 = moyenneEmpirique * gamma(1 + 1 / c) - X_i * gamma(1 + 1 / c);
-  
-	return term2 + term3;
-  }
-  
-  function derivativeEquation(c, X_i) {
-	const term1 = (1 + 2 / c) * gamma(1 + 2 / c) - 2 * (1 + 1 / c) * gamma(1 + 1 / c) * (1 / (c * c));
-	const term2 = X_i * gamma(1 + 1 / c) / (c * c);
-  
-	return term1 - term2;
-  }
-  
-  function findC(varianceEmpirique, moyenneEmpirique, X_i, c0) {
-	let c = c0; // Valeur initiale pour c
-	const maxIterations = 100;
-	const tolerance = 1e-6;
-  
-	for (let i = 0; i < maxIterations; i++) {
-	  const equationValue = equation(c, varianceEmpirique, moyenneEmpirique, X_i);
-	  const derivativeValue = derivativeEquation(c, X_i);
-  
-	  const cNext = c - equationValue / derivativeValue;
-  
-	  if (Math.abs(cNext - c) < tolerance) {
-		c = cNext;
-		break;
-	  }
-  
-	  c = cNext;
-	}
-  
-	return c;
-  }
 function varianceEmpiriquef(data) {
   const n = data.length;
   const moyenneEmpirique = data.reduce((sum, value) => sum + value, 0) / n;
@@ -766,7 +698,7 @@ function linearRegressionCoefficients(xData, yData) {
 function estimateurWeibull(echantillon) {
 	// Calcul de la taille de l'échantillon
 	const n = echantillon.length;
-  
+	
 	// Trier l'échantillon en ordre croissant
 	echantillon.sort((a, b) => a - b);
   
@@ -776,7 +708,6 @@ function estimateurWeibull(echantillon) {
 	const tableau2 = [];
 	for (let i = 1; i <= n; i++) {
 	  const zi = (i - 0.3) /( n + 0.4);
-	  console.log(zi);
 	  const yi = Math.log(-Math.log(1 - zi));
 	  tableau2.push(yi);
 	}
