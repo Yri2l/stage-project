@@ -630,7 +630,7 @@ function estimateurBinomiale(echantillon) {
   const p = 1 - (variance / moyenne);
   const n = moyenne / p;
 
-  return [n, p];
+  return [Math.round(n), p];
 }
 
   function gamma(x) {
