@@ -206,6 +206,10 @@
               <td>Estimateur</td>
               <td>{{ 1/stat_desc['moyenne'] }}</td>
             </tr>
+            <tr>
+              <td>Estimateur de vraisemblance</td>
+              <td>{{estimateur2}}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -247,13 +251,19 @@
             stat_desc()
             {
               return this.Stats_descriptives();
-            }
+            },
+        estimateur2(){
+          return this.estimateur2_exponentielle();
+        },
     },
     methods: {
       handleFileChange(event) {
         const file = event.target.files[0];
         this.readFile(file);
       },
+      estimateur2_exponentielle(){
+          return estimateur2_exponentielle(this.data_echantillon);
+        },
       readFile(file) {
         const reader = new FileReader();
         reader.onload = (event) => {

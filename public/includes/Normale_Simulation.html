@@ -220,6 +220,14 @@
                 <td>Estimateur de vraisemblance maximum \(\sigma^{2}\)</td>
                 <td>{{estim_Sigma}}</td>
               </tr>
+              <tr>
+                <td>Estimateur de vraisemblance maximum \(\mu\)</td>
+                <td>{{estimateur2[0]}}</td>
+              </tr>
+              <tr>
+               <td>Estimateur de vraisemblance maximum \(\sigma^{2}\)</td>
+               <td>{{estimateur2[1]}}</td>
+             </tr>
              </tbody>
            </table>
          </div>
@@ -284,6 +292,9 @@
         estim_Sigma() {
           return this.estimationSigma();
         },
+        estimateur2(){
+          return this.estimateur2_normale();
+        }
       },
       methods: {
         couleurrgba() {
@@ -317,6 +328,9 @@
           return;
         }
           this.data_echantillon = echantillonNormale(this.param1, Math.sqrt(this.param2), this.nb_echantillon);
+        },
+        estimateur2_normale(){
+          return estimateur2_normale(this.data_echantillon);
         },
         estimationMu() {
           //const sum = this.data_echantillon.reduce((acc, val) => acc + val, 0);

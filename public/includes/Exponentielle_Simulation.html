@@ -208,6 +208,10 @@
                     <td>Estimateur</td>
                     <td>{{ 1/stat_desc['moyenne'] }}</td>
                   </tr>
+                  <tr>
+                    <td>Estimateur de vraisemblance</td>
+                    <td>{{estimateur2}}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -263,7 +267,10 @@
       computed: {
         stat_desc() {
           return this.Stats_descriptives();
-        }
+        },
+        estimateur2(){
+          return this.estimateur2_exponentielle();
+        },
       },
       methods: {
         couleurrgba() {
@@ -300,6 +307,9 @@
         },
         Stats_descriptives() {
           return Stats_descriptives(this.data_echantillon);
+        },
+        estimateur2_exponentielle(){
+          return estimateur2_exponentielle(this.data_echantillon);
         },
         renderChart() {
           const ctx = document.getElementById('myChart').getContext('2d');

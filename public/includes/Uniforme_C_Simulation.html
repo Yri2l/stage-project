@@ -213,12 +213,20 @@
                </thead>
                <tbody>
                  <tr>
-                   <td>Estimateur de vraisemblance maximum a</td>
+                   <td>Estimateur de a</td>
                    <td>{{stat_desc["minimum"]}}</td>
                  </tr>
                  <tr>
-                  <td>Estimateur de vraisemblance maximum b</td>
+                  <td>Estimateur de b</td>
                   <td>{{stat_desc["maximum"]}}</td>
+                </tr>
+                <tr>
+                   <td>Estimateur de vraisemblance maximum a</td>
+                   <td>{{estimaeur2[0]}}</td>
+                 </tr>
+                 <tr>
+                  <td>Estimateur de vraisemblance maximum b</td>
+                  <td>{{estimaeur2[1]}}</td>
                 </tr>
                </tbody>
              </table>
@@ -271,6 +279,10 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
+              },
+              estimaeur2()
+              {
+                return this.estimateur2_uniformeContinue();
               }
       },
       methods: {
@@ -315,6 +327,10 @@
               {
                 
                 return Stats_descriptives(this.data_echantillon);
+              },
+              estimateur2_uniformeContinue(){
+                
+                return estimateur2_uniformeContinue(this.data_echantillon);
               },
         renderChart() {
           const ctx = document.getElementById('myChart').getContext('2d');

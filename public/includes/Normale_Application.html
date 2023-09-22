@@ -213,6 +213,14 @@
                 <td>Estimateur de vraisemblance maximum \(\sigma^{2}\)</td>
                 <td>{{stat_desc["variance"]}}</td>
               </tr>
+              <tr>
+                <td>Estimateur de vraisemblance maximum \(\mu\)</td>
+                <td>{{estimateur2[0]}}</td>
+              </tr>
+              <tr>
+               <td>Estimateur de vraisemblance maximum \(\sigma^{2}\)</td>
+               <td>{{estimateur2[1]}}</td>
+             </tr>
              </tbody>
            </table>
          </div>
@@ -260,12 +268,18 @@
       estim_Sigma() {
         return this.estimationSigma();
       },
+        estimateur2(){
+          return this.estimateur2_normale();
+        }
     },
     methods: {
       handleFileChange(event) {
         const file = event.target.files[0];
         this.readFile(file);
       },
+      estimateur2_normale(){
+          return estimateur2_normale(this.data_echantillon);
+        },
       readFile(file) {
         const reader = new FileReader();
         reader.onload = (event) => {

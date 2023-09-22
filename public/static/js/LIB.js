@@ -507,7 +507,7 @@ function estimateurNormale(echantillon) {
 
 
 function echantillonWeibull(lambda, k, taille) {
-	const echantillons = [];
+	let echantillons = [];
   
 	for (let i = 0; i < taille; i++) {
 	  const u = Math.random();
@@ -693,14 +693,99 @@ function linearRegressionCoefficients(xData, yData) {
   
 	return [alpha, beta];
   }
-  
 
+
+function approx(echantillon, alpha, beta) {
+  // Calcul de la taille de l'échantillon
+
+  return alpha+beta*echantillon;
+}
+
+function compute(n, tableau1, tableau2, alpha, beta) {
+  const tape = [];
+
+  // Calcul de la perte (loss)
+  const d = loss(n, tableau1, tableau2, alpha, beta);
+
+  // Initialiser le gradient à 1
+  d.grad = 1;
+
+  // Réaliser la rétropropagation (backpropagation)
+  for (const b of tape.reverse()) {
+    b();
+  }
+
+  return d;
+}
+
+// Fonction pour effectuer une étape d'optimisation
+function optimize(loss, params) {
+  const learningRate = 0.0001; // Taux d'apprentissage par défaut
+
+  const d = compute(loss, params);
+
+  // Descente de gradient
+  for (let j = 0; j < params.length; j++) {
+    const p = params[j];
+    p.val -= learningRate * p.grad;
+    p.grad = 0;
+  }
+
+  return d;
+}
+
+function loss(n, tableau1, tableau2, alpha, beta) {
+	let total = num(0)
+	for (let i = 0; i < n; i++) {
+		const x = tableau1[i]
+		const y = tableau2[i]
+		const d = Math.min(y, approx(x,alpha, beta))
+		total += d * d;
+  }
+  return total / n;
+}	
+function linearRegressionGradientDescent(data, learningRate = 0.0001, iterations = 100) {
+    const nSamples = data.length; // Nombre d'échantillons
+
+    // Initialisation des coefficients (alpha et beta)
+    let alpha = 0;
+    let beta = 0;
+
+    // Fonction d'approximation de la droite de régression
+    function approx(x) {
+        return alpha + beta * x;
+    }
+
+
+
+    // Entraînement de la régression linéaire par descente de gradient
+    for (let iteration = 0; iteration < iterations; iteration++) {
+        let gradientAlpha = 0;
+        let gradientBeta = 0;
+
+        // Calcul des gradients
+        for (let i = 0; i < nSamples; i++) {
+            const x = i;
+            const y = data[i];
+            const error = y - approx(x);
+            gradientAlpha += error;
+            gradientBeta += error * x;
+        }
+
+        // Mise à jour des coefficients par descente de gradient
+        alpha += learningRate * gradientAlpha / nSamples;
+        beta += learningRate * gradientBeta / nSamples;
+    }
+
+    return { alpha, beta };
+}
 function estimateurWeibull(echantillon) {
 	// Calcul de la taille de l'échantillon
 	const n = echantillon.length;
 	
 	// Trier l'échantillon en ordre croissant
-	echantillon.sort((a, b) => a - b);
+	if(n != 0)
+		echantillon.sort((a, b) => a - b);
   
 	// Premier tableau: ln(xi)
 	const tableau1 = echantillon.map(x => Math.log(x));
@@ -711,6 +796,7 @@ function estimateurWeibull(echantillon) {
 	  const yi = Math.log(-Math.log(1 - zi));
 	  tableau2.push(yi);
 	}
+	
 	// Calcul de la moyenne empirique de hn(x) et y
 	const moyenneHnX = moyenneEmpirique(tableau1);
 	const moyenneY = moyenneEmpirique(tableau2);
@@ -895,6 +981,486 @@ function estimateur_gamma_1(data) {
 	
 	return estimator_b;
   }
-  
 
-///////////////////////////////////////////////////
+  /*Exponentielle*/
+function likelihood(data, lambda) {
+  let likelihood = 1;
+  for (let i = 0; i < data.length; i++) {
+    likelihood *= lambda * Math.exp(-lambda * data[i]);
+  }
+  return likelihood;
+}
+
+// Fonction de gradient de la log-vraisemblance
+function gradient_expo(data, lambda) {
+  let gradient = 0;
+  for (let i = 0; i < data.length; i++) {
+    gradient += (1 / lambda - data[i]);
+  }
+  return gradient;
+}
+
+// Estimation du paramètre lambda par la descente de gradient
+function estimateur2_exponentielle(data) {
+const initialLambda = 0.5; // Valeur initiale de lambda
+const learningRate = 0.01; // Taux d'apprentissage de la descente de gradient
+const iterations = 5000; // Nombre d'itérations de la descente de gradient
+const tolerance = 0.0001;
+  let lambda = initialLambda;
+  for (let i = 0; i < iterations; i++) {
+    const grad = gradient_expo(data, lambda);
+    lambda += learningRate * grad;
+	if(Math.abs(grad) < tolerance)
+	{
+		console.log(`Convergence atteinte après ${i + 1} itérations.`);
+		break;
+	}
+  }
+  return lambda.toFixed(4);
+}
+
+  /*Uniforme Continue*/
+// Fonction de log-vraisemblance pour une loi uniforme continue
+function logLikelihood(data, a, b) {
+	const n = data.length;
+	const logLikelihood = n * Math.log(1 / (b - a));
+	return logLikelihood;
+  }
+  
+  // Fonction de gradient de la log-vraisemblance pour une loi uniforme continue
+  function gradient(data, a, b) {
+	const n = data.length;
+	const gradientA = -n / (b - a);
+	const gradientB = n / (b - a);
+	return [gradientA, gradientB];
+  }
+  
+  // Estimation des paramètres a et b par la descente de gradient
+  function estimateur2_uniformeContinue(data) {
+	const initialA = -100;
+const initialB = 100;
+const learningRate = 0.1;
+const iterations = 10000;
+	let a = initialA;
+	let b = initialB;
+  
+	for (let i = 0; i < iterations; i++) {
+	  const [gradA, gradB] = gradient(data, a, b);
+	  a = Math.max(a + learningRate * gradA, Math.min(b, Math.max(a, initialA)));
+      b = Math.min(b + learningRate * gradB, Math.max(a, Math.min(b, initialB)));
+		/*Par rapport à a += learningRate * gradA;
+    b += learningRate * gradB;
+		Cette modification assure que a et b restent à l'intérieur de l'intervalle [a, b] à chaque itération de la descente de gradient, ce qui devrait fournir des estimations plus fiables, même lorsque les valeurs initiales sont proches des bords de l'intervalle.*/
+	}
+  
+	return [a.toFixed(4), b.toFixed(4)];
+  }l
+
+/*Loi de Poisson*/
+function logLikelihood(data, lambda) {
+	let logLikelihood = 0;
+	for (let i = 0; i < data.length; i++) {
+	  logLikelihood += -lambda + data[i] * Math.log(lambda) - factorial(data[i]);
+	}
+	return logLikelihood;
+  }
+  
+  // Fonction de gradient de la log-vraisemblance pour une distribution de Poisson
+  function gradient_poisson(data, lambda) {
+	let gradient = 0;
+	for (let i = 0; i < data.length; i++) {
+	  gradient += data[i]/lambda - 1;
+	}
+	return gradient;
+  }
+  
+  // Fonction pour calculer le factoriel
+  function factorial(n) {
+	if (n === 0 || n === 1) {
+	  return 1;
+	}
+	return n * factorial(n - 1);
+  }
+  
+  // Estimation du paramètre lambda par la descente de gradient
+  function estimateur2_Poisson(data) {
+	const initialLambda = 3; // Valeur initiale de lambda
+const learningRate = 0.001; // Taux d'apprentissage de la descente de gradient
+const iterations = 50000; // Nombre d'itérations de la descente de gradient
+const tolerance = 0.0001;
+	let lambda = initialLambda;
+	for (let i = 0; i < iterations; i++) {
+	  const grad = gradient_poisson(data, lambda);
+	  lambda += learningRate * grad;
+	  if(Math.abs(grad) < tolerance)
+		{
+			console.log(`Convergence atteinte après ${i + 1} itérations.`);
+			break;
+		}
+	}
+	return lambda.toFixed(4);
+  }
+
+/*Loi Normale*/
+// Fonction de log-vraisemblance pour une distribution normale
+function logLikelihood(data, mean, stdDev) {
+	const n = data.length;
+	const logLikelihood = (-n / 2) * Math.log(2 * Math.PI * stdDev * stdDev) - 
+	  (1 / (2 * stdDev * stdDev)) * data.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0);
+	return logLikelihood;
+  }
+  
+  // Fonction de gradient de la log-vraisemblance pour une distribution normale
+  function gradient_normale(data, mean, stdDev) {
+	let gradMean = 0;
+	let gradStdDev = 0;
+	for (let i = 0; i < data.length; i++) {
+		gradMean += (1 / (stdDev * stdDev))*(data[i]-mean);
+		gradStdDev += ((1 / (stdDev * stdDev* stdDev))*((data[i]-mean)*(data[i]-mean))-(1/stdDev));
+	  }
+	return [gradMean, gradStdDev];
+  }
+  
+  // Estimation des paramètres mean (moyenne) et stdDev (écart type) par la descente de gradient
+  function estimateur2_normale(data) {
+	const initialMean = 3.0; // Valeur initiale de la moyenne
+const initialStdDev = 1.0; // Valeur initiale de l'écart type
+const learningRate = 0.0001; // Taux d'apprentissage de la descente de gradient
+const iterations = 50000; // Nombre d'itérations de la descente de gradient
+	const tolerance = 0.0001;
+	let mean = initialMean;
+	let stdDev = initialStdDev;
+	let grad=0;
+	for (let i = 0; i < iterations; i++) {
+	  const [gradMean, gradStdDev] = gradient_normale(data, mean, stdDev);
+	  mean += learningRate * gradMean;
+	  stdDev += learningRate * gradStdDev;
+		grad=Math.sqrt(gradMean*gradMean+gradStdDev*gradStdDev);
+		if(grad < tolerance)
+		{
+			console.log(`Convergence atteinte après ${i + 1} itérations.`);
+			break;
+		}
+	}
+  
+	return [mean, stdDev*stdDev];
+  }
+
+/*Loi de Bernouilli*/
+  // Fonction de log-vraisemblance pour une distribution de Bernoulli
+function logLikelihood(data, p) {
+	let logLikelihood = 0;
+	for (let i = 0; i < data.length; i++) {
+	  logLikelihood += data[i] === 1 ? Math.log(p) : Math.log(1 - p);
+	}
+	return logLikelihood;
+  }
+  
+  // Fonction de gradient de la log-vraisemblance pour une distribution de Bernoulli
+  function gradient(data, p) {
+	let grad = 0;
+	for (let i = 0; i < data.length; i++) {
+	  grad += (data[i] - p) / (p * (1 - p));
+	}
+	return grad/data.length;
+  }
+  
+  // Estimation du paramètre p par la descente de gradient avec critère d'arrêt
+  function estimateur2_Bernouilli(data) {
+	const initialP = 0.5; // Valeur initiale de p
+	const learningRate = 0.01; // Taux d'apprentissage de la descente de gradient
+	const maxIterations = 10000; // Nombre maximal d'itérations
+	const tolerance = 0.001; // Tolérance pour le critère d'arrêt
+	let p = initialP;
+  
+	for (let i = 0; i < maxIterations; i++) {
+	  const grad = gradient(data, p);
+	  p += learningRate * grad;
+  
+  
+	  // Vérification du critère d'arrêt
+	  if (Math.abs(grad) < tolerance) {
+		break; // Convergence atteinte
+	  }
+  
+	}
+  
+	return p;
+  }
+ 
+/*Loi Binomiale*/
+
+
+// Estimation des paramètres n (nombre d'essais) et p (probabilité de succès) par la descente de gradient avec critère d'arrêt
+function estimateur2_Binomiale(data, n) {
+const initialP = 0.5; // Valeur initiale de p
+const learningRate = 0.0001; // Taux d'apprentissage de la descente de gradient
+const maxIterations = 10000; // Nombre maximal d'itérations
+const tolerance = 0.01; // Tolérance pour le critère d'arrêt
+let p = initialP;
+
+for (let i = 0; i < maxIterations; i++) {
+  const gradP = gradientBinomial(data, n, p);
+  p += learningRate * gradP;
+
+  if(Math.abs(gradP) < tolerance)
+  {
+	console.log(`Convergence atteinte après ${i + 1} itérations.`);
+	break;
+  }
+}
+
+return [n, p];
+}
+  
+  // Fonction de gradient pour une distribution binomiale
+
+  function calculerCoefficientBinomial(n, k) {
+	if (k < 0 || k > n) {
+	  return 0;
+	}
+  
+	let coefficient = 1;
+	
+	for (let i = 0; i < k; i++) {
+	  coefficient *= (n - i) / (i + 1);
+	}
+  
+	return Math.round(coefficient); // Arrondir le résultat si nécessaire
+  }
+
+  function gradientBinomial(data, n, p) {
+	const nData = data.length;
+	let gradP = 0;
+  
+	for (let i = 0; i < nData; i++) {
+	  gradP += ((calculerCoefficientBinomial(n, data[i])*(data[i]/p))-(calculerCoefficientBinomial(n, data[i])*(n-data[i])/(1-p)))
+	}
+  
+	return gradP / nData;
+  }
+
+
+
+  /*Loi Geometrique*/
+  // Estimation du paramètre p d'une distribution géométrique par la descente de gradient
+function estimateur2_Geometrique(data) {
+  const initialP = 0.2; // Valeur initiale de p
+  const learningRate = 0.001; // Taux d'apprentissage de la descente de gradient
+  const maxIterations = 50000; // Nombre maximal d'itérations
+  const tolerance = 0.01; // Tolérance pour le critère d'arrêt basé sur la norme du gradient
+  let p = initialP;
+
+  for (let i = 0; i < maxIterations; i++) {
+    const grad = gradientGeometric(data, p);
+    p += learningRate * grad;
+
+    // Calcul de la norme du gradient à chaque itération
+    const gradNorm = Math.abs(grad);
+
+    // Vérification du critère d'arrêt basé sur la norme du gradient
+    if (gradNorm < tolerance) {
+      console.log(`Convergence atteinte après ${i + 1} itérations.`);
+      break; // Sortir de la boucle si le critère d'arrêt est satisfait
+    }
+
+  }
+
+  return p;
+}
+  
+  // Fonction de gradient pour une distribution géométrique
+  function gradientGeometric(data, p) {
+	const nData = data.length;
+	let gradP = 0;
+  
+	for (let i = 0; i < nData; i++) {
+	  gradP += ((data[i]-1)/p)-(1/(1-p));
+	}
+  
+	return gradP / nData;
+  }
+  
+  /*Loi Uniforme Discrete*/
+  function logLikelihoodUniformDiscrete(data, a, b) {
+	const nData = data.length;
+	let logLikelihood = 0;
+  
+	for (let i = 0; i < nData; i++) {
+	  if (data[i] >= a && data[i] <= b) {
+		logLikelihood -= Math.log(b - a + 1);
+	  } else {
+		return -Infinity; // Si une valeur est en dehors de l'intervalle, la log-vraisemblance est -Infinity
+	  }
+	}
+  
+	return logLikelihood;
+  }
+  
+  // Fonction de gradient pour une distribution uniforme discrète
+  function gradientUniformDiscrete(data, a, b) {
+	const nData = data.length;
+	let gradA = 0;
+	let gradB = 0;
+  
+	for (let i = 0; i < nData; i++) {
+	  if (data[i] < a) {
+		gradA -= 1 / (b - a + 1);
+		gradB += 1 / (b - a + 1);
+	  } else if (data[i] > b) {
+		gradA += 1 / (b - a + 1);
+		gradB -= 1 / (b - a + 1);
+	  }
+	}
+  
+	return [gradA / nData, gradB / nData];
+  }
+  
+function estimateur2_uniformeDiscrete(data) {
+  const initialA = -10; // Valeur initiale de a
+  const initialB = 10; // Valeur initiale de b
+  const learningRate = 0.01; // Taux d'apprentissage de la descente de gradient
+  const maxIterations = 30000; // Nombre maximal d'itérations
+  const tolerance = 0.0001; // Tolerance pour le critère d'arrêt
+  let a = initialA;
+  let b = initialB;
+
+  for (let i = 0; i < maxIterations; i++) {
+    const [gradA, gradB] = gradientUniformDiscrete(data, a, b);
+    a += learningRate * gradA;
+    b += learningRate * gradB;
+
+    // Calculer la norme du gradient pour le critère d'arrêt
+    const gradientNorm = Math.sqrt(gradA * gradA + gradB * gradB);
+
+    // Vérifier si la norme du gradient est inférieure à la tolérance
+    if (gradientNorm < tolerance) {
+      console.log(`Convergence atteinte après ${i + 1} itérations.`);
+      break; // Sortir de la boucle si le critère d'arrêt est satisfait
+    }
+  }
+
+  return [a, b];
+}
+
+
+  /*Loi Gamma*/
+  // Fonction de log-vraisemblance pour une distribution gamma
+function logLikelihoodGamma(data, alpha, beta) {
+	const nData = data.length;
+	let logLikelihood = 0;
+  
+	for (let i = 0; i < nData; i++) {
+	  if (data[i] > 0) {
+		logLikelihood += (alpha - 1) * Math.log(data[i]) - data[i] / beta - alpha * Math.log(beta) - Math.log(gammaFunction(alpha));
+	  } else {
+		return -Infinity; // Si une valeur est négative ou nulle, la log-vraisemblance est -Infinity
+	  }
+	}
+  
+	return nData * logLikelihood;
+  }
+  
+  // Fonction de gradient pour une distribution gamma
+  function gradientGamma(data, alpha, beta) {
+	const nData = data.length;
+	let gradAlpha = 0;
+	let gradBeta = 0;
+  
+	for (let i = 0; i < nData; i++) {
+	  if (data[i] > 0) {
+		gradAlpha += Math.log(data[i]) - digammaFunction(alpha) - Math.log(beta);
+		gradBeta += (alpha / beta) - data[i];
+	  } else {
+		return [0, 0]; // Le gradient est nul si une valeur est négative ou nulle
+	  }
+	}
+  
+	return [gradAlpha, gradBeta];
+  }
+  
+  // Fonction pour calculer la fonction digamma
+  function digammaFunction(x) {
+	const digammaCoefficients = [
+	  -1 / 12, 1 / 120, -1 / 252, 1 / 240, -1 / 132,
+	  691 / 32760, -1 / 12, 3617 / 8160, -43867 / 14364, 174611 / 6600
+	];
+	
+	x -= 1;
+	let result = Math.log(x) + 0.57721566490153286060651209; // Euler's constant
+  
+	for (let i = 0; i < 10; i++) {
+	  result -= digammaCoefficients[i] / (x + i);
+	}
+  
+	return result;
+  }
+
+  
+  // Estimation des paramètres alpha (shape) et beta (scale) d'une distribution gamma sans critère d'arrêt
+  function estimateur2_Gamma(data) {
+	const initialAlpha = 5; // Valeur initiale de alpha
+	const initialBeta = 5; // Valeur initiale de beta
+	const learningRate = 0.001; // Taux d'apprentissage de la descente de gradient
+	const maxIterations = 50000; // Nombre maximal d'itérations
+	const tolerance = 0.0001;
+	let alpha = initialAlpha;
+	let beta = initialBeta;
+  
+	for (let i = 0; i < maxIterations; i++) {
+	  	const [gradAlpha, gradBeta] = gradientGamma(data, alpha, beta);
+		
+	  	alpha += learningRate * gradAlpha;
+		beta += learningRate * gradBeta;
+		// Calculer la norme du gradient pour le critère d'arrêt
+		const gradientNorm = Math.sqrt(gradAlpha * gradAlpha + gradBeta * gradBeta);
+		console.log(alpha, beta);
+	  	if(gradientNorm < tolerance)
+		{
+			console.log(`Convergence atteinte après ${i + 1} itérations.`);
+		break; // Sortir de la boucle si le critère d'arrêt est satisfait
+		}
+	}
+  
+	return [alpha, beta];
+  }
+
+
+
+/*Loi de Weibull */
+// Fonction de gradient de la log-vraisemblance pour une distribution normale
+function gradient_weibull(data, a, b) {
+	let gradA = 0;
+	let gradB = 0;
+	for (let i = 0; i < data.length; i++) {
+		gradA += (1/a)+Math.log(data[i]/b)-Math.log(data[i]/b)*(data[i]/b)^(a);
+		gradB += ((data[i]/b)^(a))*(a/b)-(1/b)
+	  }
+	return [gradA, gradB];
+  }
+  
+  // Estimation des paramètres mean (moyenne) et stdDev (écart type) par la descente de gradient
+  function estimateur2_weibull(data) {
+	const initialA = 3.0; // Valeur initiale a
+const initialB = 1.0; // Valeur initiale de b
+const learningRate = 0.0001; // Taux d'apprentissage de la descente de gradient
+const iterations = 50000; // Nombre d'itérations de la descente de gradient
+	const tolerance = 0.0001;
+	let a = initialA;
+	let b = initialB;
+	let grad=0;
+	for (let i = 0; i < iterations; i++) {
+	  const [gradA, gradB] = gradient_weibull(data, a, b);
+	  a += learningRate * gradA;
+	  b += learningRate * gradB;
+		grad=Math.sqrt(gradA*gradA+gradB*gradB);
+		if(grad < tolerance)
+		{
+			console.log(`Convergence atteinte après ${i + 1} itérations.`);
+			break;
+		}
+	}
+  
+	return [a, b];
+  }
+  ///////////////////////////////////////////////////

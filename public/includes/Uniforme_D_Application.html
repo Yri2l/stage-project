@@ -204,6 +204,14 @@
              <td>Estimateur de vraisemblance maximum b</td>
              <td>{{stat_desc["maximum"]}}</td>
            </tr>
+           <tr>
+            <td>Estimateur de vraisemblance maximum a</td>
+            <td>{{ estimateur2[0] }}</td>
+          </tr>
+          <tr>
+           <td>Estimateur de vraisemblance maximum b</td>
+           <td>{{ estimateur2[1] }}</td>
+         </tr>
           </tbody>
         </table>
       </div>
@@ -244,7 +252,11 @@
             stat_desc()
             {
               return this.Stats_descriptives();
-            }
+            },
+              estimateur2()
+              {
+                return this.estimateur2_uniformeDiscrete();
+              }
     },
     methods: {
       handleFileChange(event) {
@@ -277,6 +289,10 @@
         // Mettez à jour le graphique
         this.chart.update();
       },
+      estimateur2_uniformeDiscrete()
+        {
+          return estimateur2_uniformeDiscrete(this.data_echantillon);
+        },
       couleurrgba() {
       let r = Math.floor(20 + Math.random() * 230);
       let g = Math.floor(20 + Math.random() * 230);

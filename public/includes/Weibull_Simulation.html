@@ -214,13 +214,21 @@
              </thead>
              <tbody>
                <tr>
-                 <td>Estimateur de vraisemblance maximum a</td>
+                 <td>Estimateur par Regression linéaire de a</td>
                  <td>{{estim_a}}</td>
                </tr>
                <tr>
-                <td>Estimateur de vraisemblance maximum b</td>
+                <td>Estimateur par Regression linéaire de b</td>
                 <td>{{estim_b}}</td>
               </tr>
+              <tr>
+                <td>Estimateur de vraisemblance maximum a</td>
+                <td>{{estimateur2[0]}}</td>
+              </tr>
+              <tr>
+               <td>Estimateur de vraisemblance maximum b</td>
+               <td>{{estimateur2[1]}}</td>
+             </tr>
              </tbody>
            </table>
          </div>
@@ -253,8 +261,8 @@
       el: '#app',
         data(){
                 return {nb_echantillon : 100,
-                  param1 : 1,
-                  param2 : 2,
+                  param1 : 0,
+                  param2 : 0,
                   nb_observation : 0,
                   minimum : 0,
                   maximum : 0,
@@ -284,30 +292,38 @@
         estim_b() {
           return this.estimationB();
         },
+        estimateur2()
+        {
+          return this.estimateur2_weibull();
+        }
       },
       methods: {
-        couleurrgba() {
-        let r = Math.floor(20 + Math.random() * 230);
-        let g = Math.floor(20 + Math.random() * 230);
-        let b = Math.floor(20 + Math.random() * 230);
-        let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
-        let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-        return color;
+      estimateur2_weibull()
+      {
+        return estimateur2_weibull(this.data_echantillon);
       },
-      rgba_vecteur(n) {
-        fond_couleur = [];
-        for (let i = 0; i < n; i++) {
-          fond_couleur.push(this.couleurrgba());
-        }
-        return fond_couleur;
-      },
-      updateChart() {
-  this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
-  this.effective = this.histogram_Continue()[1];
-  this.chart.data.labels = this.values;
-  this.chart.data.datasets[0].data = this.effective;
-  this.chart.update();
-},
+      couleurrgba() {
+          let r = Math.floor(20 + Math.random() * 230);
+          let g = Math.floor(20 + Math.random() * 230);
+          let b = Math.floor(20 + Math.random() * 230);
+          let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
+          let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+          return color;
+        },
+        rgba_vecteur(n) {
+          fond_couleur = [];
+          for (let i = 0; i < n; i++) {
+            fond_couleur.push(this.couleurrgba());
+          }
+          return fond_couleur;
+        },
+        updateChart() {
+          this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));
+          this.effective = this.histogram_Continue()[1];
+          this.chart.data.labels = this.values;
+          this.chart.data.datasets[0].data = this.effective;
+          this.chart.update();
+        },
         histogram_Continue() {
           return histogram_Continue(this.data_echantillon, this.nb_barre);
         },
@@ -346,25 +362,21 @@
               }]
             },
             options: {
-              
-	responsive: true,
-    maintainAspectRatio: false,
-	
-	categoryPercentage: 1.0, 
-    barPercentage: 1.0,  
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
-  
-  plugins: {
-		legend: {
-            display: false
-         },
-		 }
-},
-
+              responsive: true,
+              maintainAspectRatio: false,
+              categoryPercentage: 1.0,
+              barPercentage: 1.0,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+              plugins: {
+                legend: {
+                  display: false
+                },
+              }
+            },
           });
         }
       }

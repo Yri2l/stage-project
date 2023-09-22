@@ -201,6 +201,10 @@
               <td>Estimateur de vraisemblance maximum</td>
               <td>{{ stat_desc['moyenne'] }}</td>
             </tr>
+            <tr>
+              <td>Estimateur de vraisemblance maximum</td>
+              <td>{{ estimateur2 }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -241,13 +245,21 @@
             stat_desc()
             {
               return this.Stats_descriptives();
-            }
+            },
+              estimateur2()
+              {
+                return this.estimateur2_Poisson();
+              }
     },
     methods: {
       handleFileChange(event) {
         const file = event.target.files[0];
         this.readFile(file);
       },
+      estimateur2_Poisson()
+              {
+                return estimateur2_Poisson(this.data_echantillon);
+              },
       readFile(file) {
         const reader = new FileReader();
         reader.onload = (event) => {

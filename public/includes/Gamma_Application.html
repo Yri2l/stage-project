@@ -184,6 +184,14 @@
                                     <td>Estimateur de vraisemblance maximum b</td>
                                     <td>{{estim2}}</td>
                                 </tr>
+                                <tr>
+                <td>Estimateur de vraisemblance maximum a</td>
+                <td>{{ estimateur2[0] }}</td>
+              </tr>
+              <tr>
+               <td>Estimateur de vraisemblance maximum b</td>
+               <td>{{ estimateur2[1] }}</td>
+             </tr>
                             </tbody>
                         </table>
                     </div>
@@ -228,7 +236,11 @@
                 },
                 evm_gamma_2() {
                     return this.estimateur_gamma_2();
-                }
+                },
+        estimateur2()
+              {
+                return this.estimateur2_Gamma();
+              }
             },
             methods: {
                 handleFileChange(event) {
@@ -255,6 +267,10 @@
         estimateur_gamma_2(){
           return estimateur_gamma_2(this.data_echantillon);
         },
+        estimateur2_Gamma()
+      {
+        return estimateur2_Gamma(this.data_echantillon);
+      },
         updateChart() {
                     // Mettez à jour les données du graphique
                     this.values = this.histogram_Continue()[0].map(value => value.toFixed(3));

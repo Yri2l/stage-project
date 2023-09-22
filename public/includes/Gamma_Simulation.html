@@ -220,6 +220,14 @@
                 <td>Estimateur de vraisemblance maximum b</td>
                 <td>{{evm_gamma_2}}</td>
               </tr>
+              <tr>
+                <td>Estimateur de vraisemblance maximum a</td>
+                <td>{{ estimateur2[0] }}</td>
+              </tr>
+              <tr>
+               <td>Estimateur de vraisemblance maximum b</td>
+               <td>{{ estimateur2[1] }}</td>
+             </tr>
              </tbody>
            </table>
          </div>
@@ -281,7 +289,11 @@
         },
         evm_gamma_2(){
           return this.estimateur_gamma_2();
-        }
+        },
+        estimateur2()
+              {
+                return this.estimateur2_Gamma();
+              }
       },
       methods: {
         couleurrgba() {
@@ -291,6 +303,10 @@
         let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
         let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
         return color;
+      },
+      estimateur2_Gamma()
+      {
+        return estimateur2_Gamma(this.data_echantillon);
       },
       rgba_vecteur(n) {
         fond_couleur = [];

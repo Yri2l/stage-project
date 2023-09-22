@@ -195,9 +195,13 @@
            </thead>
            <tbody>
              <tr>
-               <td>Estimateur de vraisemblance maximum</td>
+               <td>Estimateur</td>
                <td>{{ stat_desc['moyenne'] }}</td>
              </tr>
+             <tr>
+              <td>Estimateur de vraisemblance maximum</td>
+              <td>{{ estimateur2 }}</td>
+            </tr>
            </tbody>
          </table>
        </div>
@@ -250,6 +254,10 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
+              },
+              estimateur2()
+              {
+                return this.estimateur2_Poisson();
               }
       },
       methods: {
@@ -297,6 +305,10 @@
               {
                 
                 return Stats_descriptives(this.data_echantillon);
+              },
+              estimateur2_Poisson()
+              {
+                return estimateur2_Poisson(this.data_echantillon);
               },
               renderChart() {
   const ctx = document.getElementById('myChart').getContext('2d');

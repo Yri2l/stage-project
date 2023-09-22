@@ -205,6 +205,10 @@
                     <td>Estimateur</td>
                     <td>{{ stat_desc['moyenne'] }}</td>
                   </tr>
+                  <tr>
+                    <td>Estimateur de maximum de vraisemblance</td>
+                    <td>{{ estimateur2 }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -261,6 +265,10 @@
       computed: {
         stat_desc() {
           return this.Stats_descriptives();
+        },
+        estimateur2()
+        {
+          return this.estimateur2_Bernouilli();
         }
       },
       methods: {
@@ -290,6 +298,10 @@
           fond_couleur.push(this.couleurrgba());
         }
         return fond_couleur;
+      },
+      estimateur2_Bernouilli()
+      {
+        return estimateur2_Bernouilli(this.data_echantillon);
       },
         getUniqueCount() {
           return getUniqueCount(this.data_echantillon);

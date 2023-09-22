@@ -204,6 +204,14 @@
              <td>Estimateur de vraisemblance maximum p</td>
              <td>{{estim_p}}</td>
            </tr>
+           <tr>
+            <td>Estimateur de n</td>
+            <td>{{ estimateur2[0] }}</td>
+          </tr>
+          <tr>
+           <td>Estimateur de p</td>
+           <td>{{ estimateur2[1] }}</td>
+         </tr>
           </tbody>
         </table>
       </div>
@@ -250,7 +258,11 @@
       },
       estim_p() {
         return this.estimationP();
+      },estimateur2()
+      {
+        return this.estimateur2_Binomiale();
       },
+      
     },
     methods: {
       estimationN(){
@@ -276,6 +288,10 @@
         event.preventDefault();
         // Faites quelque chose avec les données soumises
       },
+      estimateur2_Binomiale()
+        {
+          return estimateur2_Binomiale(this.data_echantillon, this.param1);
+        },
       updateChart() {
         // Mettez à jour les données du graphique
         

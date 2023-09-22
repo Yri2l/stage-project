@@ -201,6 +201,10 @@
               <td>Estimateur</td>
               <td>{{ stat_desc['moyenne'] }}</td>
             </tr>
+            <tr>
+              <td>Estimateur de maximum de vraisemblance</td>
+              <td>{{ estimateur2 }}</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -242,12 +246,20 @@
             stat_desc()
             {
               return this.Stats_descriptives();
-            }
+            },
+        estimateur2()
+        {
+          return this.estimateur2_Bernouilli();
+        }
     },
     methods: {
       handleFileChange(event) {
         const file = event.target.files[0];
         this.readFile(file);
+      },
+      estimateur2_Bernouilli()
+      {
+        return estimateur2_Bernouilli(this.data_echantillon);
       },
       readFile(file) {
         const reader = new FileReader();

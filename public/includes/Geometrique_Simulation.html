@@ -202,6 +202,10 @@
                     <td>Estimateur de vraisemblance maximum</td>
                     <td>{{ 1/stat_desc['moyenne'] }}</td>
                   </tr>
+                  <tr>
+                    <td>Estimateur de vraisemblance maximum</td>
+                    <td>{{ estimateur2 }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -257,6 +261,10 @@
               stat_desc()
               {
                 return this.Stats_descriptives();
+              },
+              estimateur2()
+              {
+                return this.estimateur2_Geometrique();
               }
       },
       methods: {
@@ -280,6 +288,10 @@
         let alpha = (0.1 + 0.9 * Math.random()).toFixed(2);
         let color = 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
         return color;
+      },
+      estimateur2_Geometrique()
+      {
+        return estimateur2_Geometrique(this.data_echantillon);
       },
       rgba_vecteur(n) {
         fond_couleur = [];

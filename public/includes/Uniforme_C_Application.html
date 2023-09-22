@@ -210,6 +210,14 @@
              <td>Estimateur de vraisemblance maximum b</td>
              <td>{{stat_desc["maximum"]}}</td>
            </tr>
+           <tr>
+            <td>Estimateur de vraisemblance maximum a</td>
+            <td>{{estimaeur2[0]}}</td>
+          </tr>
+          <tr>
+           <td>Estimateur de vraisemblance maximum b</td>
+           <td>{{estimaeur2[1]}}</td>
+         </tr>
           </tbody>
         </table>
       </div>
@@ -251,13 +259,21 @@
             stat_desc()
             {
               return this.Stats_descriptives();
-            }
+            },
+              estimaeur2()
+              {
+                return this.estimateur2_uniformeContinue();
+              }
     },
     methods: {
       handleFileChange(event) {
         const file = event.target.files[0];
         this.readFile(file);
       },
+      estimateur2_uniformeContinue(){
+                
+                return estimateur2_uniformeContinue(this.data_echantillon);
+              },
       readFile(file) {
         const reader = new FileReader();
         reader.onload = (event) => {
